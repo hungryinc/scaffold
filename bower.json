@@ -1,0 +1,9 @@
+{
+  "name": "scaffold",
+  "version": "0.1.0",
+  "dependecies": {},
+  "dependencies": {
+    "angularjs": "*",
+    "angular-resource": "~1.2.17"
+  }
+}
