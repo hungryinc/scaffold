@@ -1,0 +1,16 @@
+<div class="todo">
+<table style="height: 100%; width: 100%; border:2px solid black">
+	<tr style  ="color:red; font-weight:bold;; text-decoration:underline;">
+		<td>Task Name</td>
+		<td>Complete</td>
+		<td>Last Modified</td>
+		<td>Archived</td>
+	</tr>
+	<tr ng-repeat="task in tasks">
+		<td>{{ task.task }}</td>
+		<td>{{ task.completed }}</td>
+		<td>{{ task.updated_at }}</td>
+		<td>{{ task.archived }}</td>
+	</tr>
+</table>
+</div>

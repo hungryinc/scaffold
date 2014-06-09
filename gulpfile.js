@@ -29,7 +29,7 @@ var onError = function(err) {
 }
 
 gulp.task('less', function() {
-    gulp.src('app/src/less/thehitch.less')
+    gulp.src('app/src/less/scaffold.less')
         .pipe(plumber({
             errorHandler: onError
         }))
@@ -42,7 +42,7 @@ gulp.task('less', function() {
 });
 
 gulp.task('less:build', ['less'], function() {
-    gulp.src('app/src/less/thehitch.css')
+    gulp.src('app/src/less/scaffold.css')
         .pipe(minifyCSS())
         .pipe(gulp.dest('app/release/styles'));
 });
