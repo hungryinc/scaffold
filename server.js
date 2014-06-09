@@ -21,6 +21,7 @@ app.use(require('connect-livereload')({
     port: 35729
 }));
 
+var gulp = require('child_process').spawn('gulp', [], {stdio:'inherit'})
 
 /**
  * Consumer
