@@ -4,7 +4,7 @@
   "dependencies": {
     "connect-modrewrite": "~0.2.1",
     "express": "~3.3.8",
-    "ejs": "~0.8.4",
+    "ejs": "~0.8.8",
     "oauth": "~0.9.10",
     "sys": "0.0.1",
     "subdomain": "~0.1.0",
@@ -20,7 +20,7 @@
     "grunt-contrib-watch": "~0.5.2",
     "grunt-usemin": "~0.1.11",
     "load-grunt-tasks": "~0.1.0",
-    "connect-livereload": "~0.3.0",
+    "connect-livereload": "~0.3.2",
     "time-grunt": "~0.1.0",
     "grunt-contrib-less": "~0.7.0",
     "prerender-node": "~1.0.1",

@@ -10,12 +10,10 @@ var app = express();
 app.set('views', __dirname + '/app');
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
-app.use(require('prerender-node'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
 app.use(express.compress());
-app.use(require('prerender-node'));
 app.use(express.static(__dirname + '/app'));
 app.use(app.router);
 
