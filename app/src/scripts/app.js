@@ -7,7 +7,7 @@ require("../../vendor/angular-animate/angular-animate");
 require("../../vendor/angular-sanitize/angular-sanitize");
 require("../../vendor/angular-ui-router/release/angular-ui-router");
 
-console.log("Hello World from app.js");
+console.log("app.js Loaded");
 
 var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource']);
 
@@ -15,8 +15,8 @@ scaffold.config(require("./routes/MainRoutes"));
 
 scaffold.controller('ObjectCtrl', ["$scope", require("./controllers/ObjectCtrl")]);
 scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);
-scaffold.controller('HelloWorldCtrl', ["$scope", "HelloWorldService", require("./controllers/HelloWorldCtrl")]);
+scaffold.controller('MainCtrl', ["$scope", "MainService", require("./controllers/MainServiceCtrl")]);
 
-scaffold.service('HelloWorldService', ["$resource", "$q", require("./services/HelloWorldService")]);
+scaffold.service('MainService', ["$resource", "$q", require("./services/MainService")]);
 
 angular.bootstrap(document, ['Scaffold']);

@@ -1,3 +1,75 @@
+@import url(//fonts.googleapis.com/css?family=Lato:700);
+
+body {
+	margin:0;
+	font-family:'Lato', sans-serif;
+	text-align:center;
+	color: #999;
+}
+
+input[type=text], textarea, input[type=password] {
+	border: 1px solid #626292;
+	color: #626292;
+	padding: 10px;
+	vertical-align: text-top;
+	width: 300px;
+	-webkit-box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
+	box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
+	-moz-box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));  
+	background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px); 
+	position: absolute;
+	left: 150px;
+}
+
+button, input[type=submit] {
+	border: 1px solid #626292;
+	color: #202050;
+	-webkit-box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
+	box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
+	-moz-box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));  
+	background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px); 
+	padding: 10px;
+}
+
+/*TABLE*/
+div.todo table 
+{
+	font-family: sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-size: 115%;
+	width: auto;
+	overflow: auto;
+	display: block;
+    margin: 0px auto;
+}
+
+div.todo table th {
+	background-color: rgb(112, 196, 105);
+	font-weight: normal;
+	color: white;
+	padding: 20px 30px;
+	text-align: center;
+}
+
+div.todo table td {
+	background-color: rgb(238, 238, 238);
+	padding: 20px 30px;
+	color: rgb(111, 111, 111);
+}
+
+
+
+/*AngularJS ng-animate*/
 
 .animate-enter, 
 .animate-leave
@@ -26,18 +98,4 @@
 	opacity: 1;
 	width: 150px;
 	height: 30px;
-}
-
-table.names td {
-	border:2px solid black;
-}
-
-.todo {
-	width: 700px;
-	height: 500px;
-	position: absolute;
-	left: 34%;
-	top: 30%;
-	margin-left: -100px;
-	margin-top: -250px;
 }

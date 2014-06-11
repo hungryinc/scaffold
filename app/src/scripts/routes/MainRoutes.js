@@ -29,7 +29,7 @@ module.exports = function($stateProvider, $urlRouterProvider, $routeProvider, $l
         views: {
             layout: {
                 templateUrl: "/release/html/layouts/service.html",
-                controller: "HelloWorldCtrl"
+                controller: "MainCtrl"
             }
         },
     });
