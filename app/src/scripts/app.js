@@ -15,8 +15,8 @@ scaffold.config(require("./routes/MainRoutes"));
 
 scaffold.controller('ObjectCtrl', ["$scope", require("./controllers/ObjectCtrl")]);
 scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);
-scaffold.controller('MainCtrl', ["$scope", "MainService", require("./controllers/MainServiceCtrl")]);
+scaffold.controller('MainCtrl', ["$scope", "MainService", "$rootScope", require("./controllers/MainServiceCtrl")]);
 
-scaffold.service('MainService', ["$resource", "$q", require("./services/MainService")]);
+scaffold.service('MainService', ["$resource", "$q", "$rootScope", require("./services/MainService")]);
 
 angular.bootstrap(document, ['Scaffold']);

@@ -22,7 +22,7 @@ input[type=password] {
   background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));
   background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px);
   position: absolute;
-  left: 150px;
+  left: 280px;
 }
 button,
 input[type=submit] {

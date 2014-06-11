@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, MainService) {
+module.exports = function($scope, MainService, $rootScope) {
 
     console.log("MainServiceCtrl Loaded");
 
@@ -19,6 +19,11 @@ module.exports = function($scope, MainService) {
     }
 
     refreshList();
+
+    $rootScope.$on('afterModification', function() {
+        console.log("afterModification Broadcast Received");
+        refreshList();
+    });
 
     $scope.toggleArchiveView = function() {
         $scope.showArchives = !$scope.showArchives;

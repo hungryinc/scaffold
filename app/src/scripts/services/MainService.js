@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($resource, $q) {
+module.exports = function($resource, $q, $rootScope) {
 
     console.log("MainService Loaded");
 
@@ -160,7 +160,7 @@ module.exports = function($resource, $q) {
         Tasks.markDone({
             id: task.id,
         }, function() {
-            task.completed = 1;
+            $rootScope.$emit('afterModification');
         });
     };
 
@@ -170,7 +170,7 @@ module.exports = function($resource, $q) {
         Tasks.markNotDone({
             id: task.id,
         }, function() {
-            task.completed = 0;
+            $rootScope.$emit('afterModification');
         });
     };
 
@@ -180,7 +180,7 @@ module.exports = function($resource, $q) {
         Tasks.archive({
             id: task.id,
         }, function() {
-            task.archived = 1;
+            $rootScope.$emit('afterModification');
         });
     };
 
@@ -190,7 +190,7 @@ module.exports = function($resource, $q) {
         Tasks.unarchive({
             id: task.id,
         }, function() {
-            task.archived = 0;
+            $rootScope.$emit('afterModification');
         });
     };
 
@@ -202,7 +202,7 @@ module.exports = function($resource, $q) {
             id: task.id,
             name: newname
         }, function() {
-            task.task = newname;
+            $rootScope.$emit('afterModification');
         });
     };
 
@@ -227,6 +227,7 @@ module.exports = function($resource, $q) {
                 taskId: task.id,
             }, function() {
                 console.log(task.task + " removed");
+                $rootScope.$emit('afterModification');
             });
         } else {
             console.log("Deletion Cancelled");
