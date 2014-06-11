@@ -81,6 +81,30 @@ module.exports = function($resource, $q, $rootScope) {
             }
         },
 
+        markHigh: {
+            method: "PUT",
+            params: {
+                taskId: '@id',
+                action: 'markhigh'
+            }
+        },
+
+        markMed: {
+            method: "PUT",
+            params: {
+                taskId: '@id',
+                action: 'markmed'
+            }
+        },
+
+        markLow: {
+            method: "PUT",
+            params: {
+                taskId: '@id',
+                action: 'marklow'
+            }
+        },
+
         remove: {
             method: "DELETE",
             params: {
@@ -99,6 +123,9 @@ module.exports = function($resource, $q, $rootScope) {
         task.unarchive = unarchive;
         task.rename = rename;
         task.remove = remove;
+        task.markHigh = markHigh;
+        task.markMed = markMed;
+        task.markLow = markLow;
 
         return task;
     }
@@ -201,6 +228,36 @@ module.exports = function($resource, $q, $rootScope) {
         Tasks.rename({
             id: task.id,
             name: newname
+        }, function() {
+            $rootScope.$emit('afterModification');
+        });
+    };
+
+    var markHigh = function() {
+        console.log("MainService.markHigh");
+        var task = this;
+        Tasks.markHigh({
+            id: task.id,
+        }, function() {
+            $rootScope.$emit('afterModification');
+        });
+    };
+
+    var markMed = function() {
+        console.log("MainService.markMed");
+        var task = this;
+        Tasks.markMed({
+            id: task.id,
+        }, function() {
+            $rootScope.$emit('afterModification');
+        });
+    };
+
+    var markLow = function() {
+        console.log("MainService.markLow");
+        var task = this;
+        Tasks.markLow({
+            id: task.id,
         }, function() {
             $rootScope.$emit('afterModification');
         });

@@ -1,8 +1,9 @@
 @import url(//fonts.googleapis.com/css?family=Lato:700);
 
 body {
-	margin:0;
+	position: relative;
 	font-family:'Lato', sans-serif;
+	width: 70%;
 	color: #999;
 }
 
@@ -21,8 +22,7 @@ input[type=text], textarea, input[type=password] {
 	-khtml-border-radius: 5px;
 	background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));  
 	background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px); 
-	position: absolute;
-	left: 280px;
+	text-align: center;
 }
 
 button, input[type=submit] {
@@ -40,16 +40,21 @@ button, input[type=submit] {
 	padding: 10px;
 }
 
+div.todo
+{
+	margin: 0px auto;
+}
+
 /*TABLE*/
 div.todo table 
 {
 	font-family: sans-serif;
 	-webkit-font-smoothing: antialiased;
 	font-size: 115%;
-	width: auto;
+	width: 1100px;
 	overflow: auto;
 	display: block;
-    margin: 0px auto;
+	margin: 0px auto;
 }
 
 div.todo table th {
@@ -60,41 +65,53 @@ div.todo table th {
 	text-align: center;
 }
 
-div.todo table td {
-	background-color: rgb(238, 238, 238);
+.high {
+	background-color: rgb(245, 71, 71);
 	padding: 20px 30px;
-	color: rgb(111, 111, 111);
+	color: rgb(255, 255, 255);
 }
 
+.med {
+	background-color: rgb(196, 222, 29);
+	padding: 20px 30px;
+	color: rgb(0, 0, 0);
+}
+
+.low {
+	background-color: rgb(238, 238, 238);
+	padding: 20px 30px;
+	color: rgb(80, 80, 80);
+}
 
 
 /*AngularJS ng-animate*/
 
-.animate-enter, 
-.animate-leave
+.tasklist.ng-enter
 { 
-	-webkit-transition: 275ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	-moz-transition: 275ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	-ms-transition: 275ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	-o-transition: 275ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	transition: 275ms cubic-bezier(0.250, 0.250, 0.750, 0.750) all;
-	position: relative;
-	display: block;
-	overflow: hidden;
-	text-overflow: clip;
-	white-space:nowrap;
+	transition: 0.75s;
+	opacity:0;
 } 
-
-.animate-leave.animate-leave-active,
-.animate-enter {
-	opacity: 0;
-	width: 0px;
-	height: 0px;
+.tasklist.ng-enter-stagger 
+{
+	transition-delay:0.1s;
 }
 
-.animate-enter.animate-enter-active, 
-.animate-leave {
+.tasklist.ng-enter-active 
+{
 	opacity: 1;
-	width: 150px;
-	height: 30px;
+}
+
+.tasklist.ng-leave
+{ 
+	transition: 0.75s;
+	opacity:1;
+} 
+.tasklist.ng-leave-stagger 
+{
+	transition-delay:0.1s;
+}
+
+.tasklist.ng-leave-active 
+{
+	opacity: 0;
 }

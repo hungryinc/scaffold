@@ -20,6 +20,13 @@ module.exports = function($scope, MainService, $rootScope) {
 
     refreshList();
 
+    $scope.watch('tasks[$index]',
+        function(newval, oldval, scope) {
+            console.log("HELLO!!!!");
+        }, true);
+
+
+
     $rootScope.$on('afterModification', function() {
         console.log("afterModification Broadcast Received");
         refreshList();
@@ -33,13 +40,15 @@ module.exports = function($scope, MainService, $rootScope) {
     $scope.create = function() {
 
         var newTask = {
-            task: $scope.name
+            task: $scope.add,
+            priority: $scope.priority
         };
 
         MainService.create(newTask).then(function() {
             refreshList()
         });
 
-        $scope.name = "";
+        $scope.add = "";
+        $scope.priority = "";
     }
 }
