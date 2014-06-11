@@ -3,12 +3,15 @@
 	<br />
 	<form ng-submit="create()">
 		<input type="text" ng-model="name" placeholder="Add Task">	
-		<button type="submit">Submit</button>
+		<button type="submit" style="position: absolute; left: 480px;">Submit</button>
 	</form>
 	<br />
 	<br />
-	<button type="button" ng-if="showArchives"ng-click="toggleArchiveView()">Hide Archives</button>
-	<button type="button" ng-if="!showArchives"ng-click="toggleArchiveView()">Show Archives</button>
+	<br />
+	<button type="button" ng-if="showArchives"ng-click="toggleArchiveView()" style="position: absolute; left: 352px;">Hide Archives</button>
+	<button type="button" ng-if="!showArchives"ng-click="toggleArchiveView()" style="position: absolute; left: 352px;">Show Archives</button>
+	<br />
+	<br />
 	<br />
 	
 	<table>
