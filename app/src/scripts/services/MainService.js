@@ -4,7 +4,7 @@ module.exports = function($resource, $q, $rootScope) {
 
     console.log("MainService Loaded");
 
-    var URL = 'http://localhost:8888/tasks/:taskId/:action/:name';
+    var URL = 'http://localhost:8888/tasks/:taskId/:action/:value';
 
     var formatDate = function(date) {
         var t = date.split(/[- :]/);
@@ -77,7 +77,16 @@ module.exports = function($resource, $q, $rootScope) {
             params: {
                 taskId: '@id',
                 action: 'rename',
-                name: '@name'
+                value: '@name'
+            }
+        },
+
+        changeDueDate: {
+            method: "PUT",
+            params: {
+                taskId: '@id',
+                action: 'changeduedate',
+                value: '@duedate'
             }
         },
 
@@ -116,7 +125,7 @@ module.exports = function($resource, $q, $rootScope) {
     });
 
     var format = function(task) {
-        task.updated_at = formatDate(task.updated_at);
+        task.duedate = formatDate(task.duedate);
         task.markdone = markDone;
         task.marknotdone = markNotDone;
         task.archive = archive;
@@ -126,6 +135,7 @@ module.exports = function($resource, $q, $rootScope) {
         task.markHigh = markHigh;
         task.markMed = markMed;
         task.markLow = markLow;
+        task.changeDueDate = changeDueDate;
 
         return task;
     }
@@ -262,6 +272,17 @@ module.exports = function($resource, $q, $rootScope) {
             $rootScope.$emit('afterModification');
         });
     };
+
+    var changeDueDate = function(newDueDate) {
+        console.log("MainService.changeDate", newDueDate);
+        var task = this;
+        Tasks.changeDueDate({
+            id: task.id,
+            duedate: newDueDate
+        }, function() {
+            $rootScope.$emit('afterModification');
+        });
+    }
 
     this.create = function(data) {
         console.log("MainService.create");

@@ -1,58 +1,30 @@
 @import url(//fonts.googleapis.com/css?family=Lato:700);
+@import url(ng-quick-date.css);
 body {
-  position: relative;
   font-family: 'Lato', sans-serif;
   width: 70%;
   color: #999;
+  display: block;
 }
-input[type=text],
+form > input,
+select,
 textarea,
-input[type=password] {
-  border: 1px solid #626292;
-  color: #626292;
-  padding: 10px;
-  vertical-align: text-top;
-  width: 300px;
-  -webkit-box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
-  box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
-  -moz-box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -border-radius: 5px;
-  -khtml-border-radius: 5px;
-  background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));
-  background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px);
-  text-align: center;
-}
-button,
-input[type=submit] {
-  border: 1px solid #626292;
-  color: #202050;
-  -webkit-box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
-  box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
-  -moz-box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -border-radius: 5px;
-  -khtml-border-radius: 5px;
-  background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));
-  background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px);
-  padding: 10px;
-}
-div.todo {
-  margin: 0px auto;
+button {
+  background: #fff;
+  font-size: 1em;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  color: #8c8a8b;
 }
 /*TABLE*/
-div.todo table {
+div.todo > table {
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   font-size: 115%;
-  width: 1100px;
+  width: auto;
   overflow: auto;
-  display: block;
-  margin: 0px auto;
 }
-div.todo table th {
+div.todo > table > tbody > tr > th {
   background-color: #70c469;
   font-weight: normal;
   color: white;
@@ -74,25 +46,60 @@ div.todo table th {
   padding: 20px 30px;
   color: #505050;
 }
+.calendar {
+  font-family: sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 80%;
+  width: auto;
+  background-color: #01c469;
+  font-weight: normal;
+  color: white;
+  text-align: center;
+}
+.calendar .quickdate-calendar th {
+  background-color: red;
+}
 /*AngularJS ng-animate*/
-.tasklist.ng-enter {
-  transition: 0.75s;
+.high.ng-enter {
+  transition: 0.25s;
   opacity: 0;
 }
-.tasklist.ng-enter-stagger {
-  transition-delay: 0.1s;
-}
-.tasklist.ng-enter-active {
+.high.ng-enter-active {
   opacity: 1;
 }
-.tasklist.ng-leave {
-  transition: 0.75s;
+.high.ng-leave {
+  transition: 0.25s;
   opacity: 1;
 }
-.tasklist.ng-leave-stagger {
-  transition-delay: 0.1s;
-}
-.tasklist.ng-leave-active {
+.high.ng-leave-active {
   opacity: 0;
 }
-/*# sourceMappingURL=data:application/json,%7B%22version%22%3A3%2C%22sources%22%3A%5B%22%2FUsers%2Falexabraham%2FDevelopment%2FScaffold%2Fapp%2Fsrc%2Fless%2Fscaffold.less%22%5D%2C%22names%22%3A%5B%5D%2C%22mappings%22%3A%22%3BAAEA%3BEACC%2CkBAAA%3BEACA%2CaAAY%2CkBAAZ%3BEACA%2CUAAA%3BEACA%2CWAAA%3B%3BAAGD%2CKAAK%3BAAAa%3BAAAU%2CKAAK%3BEAChC%2CyBAAA%3BEACA%2CcAAA%3BEACA%2CaAAA%3BEACA%2CwBAAA%3BEACA%2CYAAA%3BEACA%2C6CAAA%3BEACA%2CqCAAA%3BEACA%2C0CAAA%3BEACA%2C0BAAA%3BEACA%2CuBAAA%3BEACA%2CmBAAA%3BEACA%2CyBAAA%3BEACA%2CYAAY%2C4CAA4C%2CeAAe%2CyBAAyB%2CYAAhG%3BEACA%2CYAAY%2C6DAAZ%3BEACA%2CkBAAA%3B%3BAAGD%3BAAAQ%2CKAAK%3BEACZ%2CyBAAA%3BEACA%2CcAAA%3BEACA%2C6CAAA%3BEACA%2CqCAAA%3BEACA%2C0CAAA%3BEACA%2C0BAAA%3BEACA%2CuBAAA%3BEACA%2CmBAAA%3BEACA%2CyBAAA%3BEACA%2CYAAY%2C4CAA4C%2CeAAe%2CyBAAyB%2CYAAhG%3BEACA%2CYAAY%2C6DAAZ%3BEACA%2CaAAA%3B%3BAAGD%2CGAAG%3BEAEF%2CgBAAA%3B%3B%3BAAID%2CGAAG%2CKAAM%3BEAER%2CuBAAA%3BEACA%2CmCAAA%3BEACA%2CeAAA%3BEACA%2CaAAA%3BEACA%2CcAAA%3BEACA%2CcAAA%3BEACA%2CgBAAA%3B%3BAAGD%2CGAAG%2CKAAM%2CMAAM%3BEACd%2CyBAAA%3BEACA%2CmBAAA%3BEACA%2CYAAA%3BEACA%2CkBAAA%3BEACA%2CkBAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3B%3BAAMD%2CSAAS%3BEAER%2CiBAAA%3BEACA%2CUAAA%3B%3BAAED%2CSAAS%3BEAER%2CsBAAA%3B%3BAAGD%2CSAAS%3BEAER%2CUAAA%3B%3BAAGD%2CSAAS%3BEAER%2CiBAAA%3BEACA%2CUAAA%3B%3BAAED%2CSAAS%3BEAER%2CsBAAA%3B%3BAAGD%2CSAAS%3BEAER%2CUAAA%22%7D */
+.med.ng-enter {
+  transition: 0.25s;
+  opacity: 0;
+}
+.med.ng-enter-active {
+  opacity: 1;
+}
+.med.ng-leave {
+  transition: 0.25s;
+  opacity: 1;
+}
+.med.ng-leave-active {
+  opacity: 0;
+}
+.low.ng-enter {
+  transition: 0.25s;
+  opacity: 0;
+}
+.low.ng-enter-active {
+  opacity: 1;
+}
+.low.ng-leave {
+  transition: 0.25s;
+  opacity: 1;
+}
+.low.ng-leave-active {
+  opacity: 0;
+}
+/*# sourceMappingURL=data:application/json,%7B%22version%22%3A3%2C%22sources%22%3A%5B%22%2FUsers%2Falexabraham%2FDevelopment%2FScaffold%2Fapp%2Fsrc%2Fless%2Fscaffold.less%22%5D%2C%22names%22%3A%5B%5D%2C%22mappings%22%3A%22%3B%3BAAGA%3BEACC%2CaAAY%2CkBAAZ%3BEACA%2CUAAA%3BEACA%2CWAAA%3BEACA%2CcAAA%3B%3BAAGD%2CIAAK%3BAACD%3BAACA%3BAACA%3BEACD%2CgBAAA%3BEACA%2CcAAA%3BEACA%2CaAAY%2CuBAAuB%2CwBAAwB%2C8CAA3D%3BEACA%2CgBAAA%3BEACA%2CcAAA%3B%3B%3BAAKH%2CGAAG%2CKAAM%3BEAER%2CuBAAA%3BEACA%2CmCAAA%3BEACA%2CeAAA%3BEACA%2CWAAA%3BEACA%2CcAAA%3B%3BAAND%2CGAAG%2CKAAM%2CQAQR%2CQAAQ%2CKAAK%3BEACZ%2CyBAAA%3BEACA%2CmBAAA%3BEACA%2CYAAA%3BEACA%2CkBAAA%3BEACA%2CkBAAA%3B%3BAAKF%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEAMC%2CuBAAA%3BEACA%2CmCAAA%3BEACA%2CcAAA%3BEACA%2CWAAA%3BEACA%2CyBAAA%3BEACA%2CmBAAA%3BEACA%2CYAAA%3BEACA%2CkBAAA%3B%3BAAbD%2CSAEC%2CoBAAoB%3BEACnB%2CqBAAA%3B%3B%3BAAgBF%2CKAAK%3BEAEJ%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CKAAK%3BEAEJ%2CUAAA%3B%3BAAGD%2CKAAK%3BEAEJ%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CKAAK%3BEAEJ%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%22%7D */

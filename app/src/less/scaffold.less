@@ -1,68 +1,42 @@
 @import url(//fonts.googleapis.com/css?family=Lato:700);
+@import url(ng-quick-date.css);
 
 body {
-	position: relative;
 	font-family:'Lato', sans-serif;
 	width: 70%;
 	color: #999;
+	display: block;
 }
 
-input[type=text], textarea, input[type=password] {
-	border: 1px solid #626292;
-	color: #626292;
-	padding: 10px;
-	vertical-align: text-top;
-	width: 300px;
-	-webkit-box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
-	box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
-	-moz-box-shadow: #d3d3e3 0.1em 0.1em 0.2em;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	-border-radius: 5px;
-	-khtml-border-radius: 5px;
-	background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));  
-	background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px); 
-	text-align: center;
-}
+form > input, 
+	   select, 
+	   textarea, 
+	   button {
+			background:#fff;
+			font-size:1em;
+			font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-weight:300;
+			color:#8c8a8b;
+	   }
 
-button, input[type=submit] {
-	border: 1px solid #626292;
-	color: #202050;
-	-webkit-box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
-	box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
-	-moz-box-shadow: #e3e3e3 0.1em 0.1em 0.2em;
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	-border-radius: 5px;
-	-khtml-border-radius: 5px;
-	background: -webkit-gradient(linear, left top, left 25, from(#f8f8ff), color-stop(4%, #e8e8ee), to(#f8f8ff));  
-	background: -moz-linear-gradient(top, #f8f8ff, #dedeee 1px, #e8e8ee 25px); 
-	padding: 10px;
-}
-
-div.todo
-{
-	margin: 0px auto;
-}
 
 /*TABLE*/
-div.todo table 
+div.todo > table 
 {
 	font-family: sans-serif;
 	-webkit-font-smoothing: antialiased;
 	font-size: 115%;
-	width: 1100px;
+	width: auto;
 	overflow: auto;
-	display: block;
-	margin: 0px auto;
-}
 
-div.todo table th {
-	background-color: rgb(112, 196, 105);
-	font-weight: normal;
-	color: white;
-	padding: 20px 30px;
-	text-align: center;
+	> tbody > tr > th {
+		background-color: rgb(112, 196, 105);
+		font-weight: normal;
+		color: white;
+		padding: 20px 30px;
+		text-align: center;
+	}
+
 }
 
 .high {
@@ -83,35 +57,87 @@ div.todo table th {
 	color: rgb(80, 80, 80);
 }
 
+.calendar {
+
+	.quickdate-calendar th {
+		background-color: red;
+	}
+
+	font-family: sans-serif;
+	-webkit-font-smoothing: antialiased;
+	font-size: 80%;
+	width: auto;
+	background-color: rgb(001, 196, 105);
+	font-weight: normal;
+	color: white;
+	text-align: center;
+}
+
 
 /*AngularJS ng-animate*/
 
-.tasklist.ng-enter
+.high.ng-enter
 { 
-	transition: 0.75s;
+	transition: 0.25s;
 	opacity:0;
 } 
-.tasklist.ng-enter-stagger 
-{
-	transition-delay:0.1s;
-}
 
-.tasklist.ng-enter-active 
+.high.ng-enter-active 
 {
 	opacity: 1;
 }
 
-.tasklist.ng-leave
+.high.ng-leave
 { 
-	transition: 0.75s;
+	transition: 0.25s;
 	opacity:1;
 } 
-.tasklist.ng-leave-stagger 
+
+.high.ng-leave-active 
 {
-	transition-delay:0.1s;
+	opacity: 0;
 }
 
-.tasklist.ng-leave-active 
+.med.ng-enter
+{ 
+	transition: 0.25s;
+	opacity:0;
+} 
+
+.med.ng-enter-active 
+{
+	opacity: 1;
+}
+
+.med.ng-leave
+{ 
+	transition: 0.25s;
+	opacity:1;
+} 
+
+.med.ng-leave-active 
+{
+	opacity: 0;
+}
+
+.low.ng-enter
+{ 
+	transition: 0.25s;
+	opacity:0;
+} 
+
+.low.ng-enter-active 
+{
+	opacity: 1;
+}
+
+.low.ng-leave
+{ 
+	transition: 0.25s;
+	opacity:1;
+} 
+
+.low.ng-leave-active 
 {
 	opacity: 0;
 }
