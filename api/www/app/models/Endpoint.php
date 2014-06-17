@@ -31,25 +31,39 @@ class Endpoint extends Eloquent implements EndpointRepository
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$newEntry->name = $name;
 			} else {
-				throw new Exception('Name field is missing');
+				throw new Exception('Name field is missing'); die();
 			}
 
 			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
 				$newEntry->uri = $uri;
 			} else {
-				throw new Exception('URI field is missing');
+				throw new Exception('URI field is missing'); die();
 			}
 
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
 				$newEntry->method = $method;
 			} else {
-				throw new Exception('Method field is missing');
+				throw new Exception('Method field is missing'); die();
 			}
 
 			if (isset($jsonobject['response_code']) && $response_code = $jsonobject['response_code']) {
 				$newEntry->response_code = $response_code;
 			} else {
-				throw new Exception('"Response Code" field is missing');
+				throw new Exception('"Response Code" field is missing'); die();
+			}
+
+			if (isset($jsonobject['object'])) {
+				if(preg_match('/%(\d+)%/is', $jsonobject['object'], $matches)){
+					$object = Object::find($matches[1]);
+
+					if ($object == null) {
+						throw new Exception("Object ID does not exist"); die();
+					}
+
+					$newEntry->object = json_encode($object);
+				} else {
+					throw new Exception("'Object' field is not valid"); die();
+				}
 			}
 
 			$newEntry->save();
@@ -92,9 +106,9 @@ class Endpoint extends Eloquent implements EndpointRepository
 				}	
 			}
 
-			return $newEntry;
+			return $newEntry->formatted();
 		} else {
-			throw new Exception('Invalid JSON');
+			throw new Exception('Invalid JSON'); die();
 		}
 
 	}
@@ -104,7 +118,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 		$entry = $this->find($id);
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
-		
+
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$entry->name = $name;
 			}
@@ -119,6 +133,20 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 			if (isset($jsonobject['response_code']) && $response_code = $jsonobject['response_code']) {
 				$entry->response_code = $response_code;
+			}
+
+			if (isset($jsonobject['object'])) {
+				if(preg_match('/%(\d+)%/is', $jsonobject['object'], $matches)){
+					$object = $matches[0];
+
+					if ($object == null) {
+						throw new Exception("Object ID does not exist"); die();
+					}
+
+					$entry->object = $object;
+				} else {
+					throw new Exception("'Object' field is not valid"); die();
+				}
 			}
 
 			$entry->save();
@@ -161,10 +189,10 @@ class Endpoint extends Eloquent implements EndpointRepository
 				}	
 			}
 
-			return $entry;
+			return $entry->formatted();
 
 		} else {
-			throw new Exception('Invalid JSON');
+			throw new Exception('Invalid JSON'); die();
 		}
 	}
 
@@ -179,7 +207,24 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 		$entry->delete();
 
-		return $entry->toArray();
+		return $entry->formatted();
+	}
+
+	public function formatted()
+	{
+		$id = $this->object;
+
+		if(preg_match('/%(\d+)%/is', $id, $matches)){
+			$id = $matches[1];
+		}
+
+		$object = Object::find($id);
+
+		$object->json = json_decode($object->json);
+		
+		$this->object = $object;
+
+		return $this->toArray();
 	}
 
 }

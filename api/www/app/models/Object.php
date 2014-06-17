@@ -80,7 +80,7 @@ class Object extends Eloquent implements ObjectRepository
 
 	public function formatted()
 	{
-		$this->json 		= json_decode($this->json);
+		$this->json = json_decode($this->json);
 		
 		return $this->toArray();
 	}
