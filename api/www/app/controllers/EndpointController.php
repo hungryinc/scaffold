@@ -32,7 +32,7 @@ class EndpointController extends BaseController
 		} catch (Exception $e) {
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error(json_encode($error));
+			return $this->error($e);
 		}
 		
 		return Response::json($endpoint);

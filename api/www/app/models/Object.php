@@ -112,7 +112,7 @@ class Object extends Eloquent implements ObjectRepository
 			if (!count($array)) {
 				$object->delete();
 			} else {
-				throw new ObjectDeleteException("You can't delete this object because some endpoints are using it.", $array); die();
+				throw new ObjectDeleteException("You can't delete this object because some endpoints are referencing it.", $array); die();
 			}
 
 

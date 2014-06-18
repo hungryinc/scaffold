@@ -5,12 +5,20 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 	protected $hidden = array('pivot', 'created_at', 'updated_at');
 
+	//GET Methods
+
 	public function getEndpoints() 
 	{
 		$endpoints = $this->with('requestHeaders', 'responseHeaders')->get();
 
-		foreach ($endpoints as $endpoint) {
-			$endpoint = $endpoint->formatted();
+		if ($endpoints != null) {
+
+			foreach ($endpoints as $endpoint) {
+				$endpoint = $endpoint->formatted();
+			}
+
+		} else {
+			throw new Exception("The model is having trouble accessing the MySQL database."); die();
 		}
 
 		return $endpoints->toArray();
@@ -27,15 +35,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 		}
 	}
 
-	public function requestHeaders()
-	{
-		return $this->belongsToMany('Header', 'request_headers_endpoints', 'endpoint_id', 'header_id');
-	}
-
-	public function responseHeaders()
-	{
-		return $this->belongsToMany('Header', 'response_headers_endpoints', 'endpoint_id', 'header_id');
-	}
+	//POST Methods
 
 	public function createEndpoint($jsonobject)
 	{
@@ -67,59 +67,28 @@ class Endpoint extends Eloquent implements EndpointRepository
 				throw new Exception('"Response Code" field is missing'); die();
 			}
 
-			if (isset($jsonobject['object'])) {
-				if(preg_match('/%(\d+)%/is', $jsonobject['object'], $matches)){
-					if (Object::find($matches[1] == null)) {
-						throw new Exception("Object ID does not exist"); die();
-					} else {
-						$object = $matches[0];
-						$entry->object = $object;
+			if (isset($jsonobject['object']) && $id = $jsonobject['object']) {
+				try {
+
+					$object = $this->parseObject($id);
+
+					if ($object != null) {
+						$newEndpoint->object = $id;
 					}
 
-
-				} else {
-					throw new Exception("'Object' field is not valid"); die();
+				} catch (Exception $e) {
+					throw $e; die();
 				}
 			}
 
 			$newEndpoint->save();
 
 			if (isset($jsonobject['request_headers']) && $request_headers = $jsonobject['request_headers']) {
-				foreach ($request_headers as $array) {
-					$id_array = array();
-					foreach ($array as $key => $value) {
-						$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
-
-						if ($header == null) {
-							$header = new Header();
-							$header->key = $key;
-							$header->value = $value;
-							$header->save();
-						}
-
-						$id_array[] = $header->id;
-					}
-					$newEndpoint->requestHeaders()->sync($id_array);
-				}		
+				$this->syncHeaders($newEndpoint, $request_headers, 'request');
 			}
 
 			if (isset($jsonobject['response_headers']) && $response_headers = $jsonobject['response_headers']) {
-				foreach ($response_headers as $array) {
-					$id_array = array();
-					foreach ($array as $key => $value) {
-						$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
-
-						if ($header == null) {
-							$header = new Header();
-							$header->key = $key;
-							$header->value = $value;
-							$header->save();
-						}
-
-						$id_array[] = $header->id;
-					}
-					$newEndpoint->responseHeaders()->sync($id_array);
-				}	
+				$this->syncHeaders($newEndpoint, $response_headers, 'response');	
 			}
 
 			return $newEndpoint->formatted();
@@ -128,6 +97,8 @@ class Endpoint extends Eloquent implements EndpointRepository
 		}
 
 	}
+
+	//PUT Methods
 
 	public function editEndpoint($id, $jsonobject) 
 	{
@@ -151,59 +122,28 @@ class Endpoint extends Eloquent implements EndpointRepository
 				$endpoint->response_code = $response_code;
 			}
 
-			if (isset($jsonobject['object'])) {
-				if(preg_match('/%(\d+)%/is', $jsonobject['object'], $matches)){
-					if (Object::find($matches[1]) != null) {
-						$object = $matches[0];
-						$endpoint->object = $object;
-					} else {
-						throw new Exception("Object ID does not exist"); die();
+			if (isset($jsonobject['object']) && $id = $jsonobject['object']) {
+				try {
+
+					$object = $this->parseObject($id);
+
+					if ($object != null) {
+						$endpoint->object = $id;
 					}
 
-
-				} else {
-					throw new Exception("'Object' field is not valid"); die();
+				} catch (Exception $e) {
+					throw $e; die();
 				}
 			}
 
 			$endpoint->save();
 
 			if (isset($jsonobject['request_headers']) && $request_headers = $jsonobject['request_headers']) {
-				foreach ($request_headers as $array) {
-					$id_array = array();
-					foreach ($array as $key => $value) {
-						$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
-
-						if ($header == null) {
-							$header = new Header();
-							$header->key = $key;
-							$header->value = $value;
-							$header->save();
-						}
-
-						$id_array[] = $header->id;
-					}
-					$endpoint->requestHeaders()->sync($id_array);
-				}			
+				$this->syncHeaders($endpoint, $request_headers, 'request');		
 			}
 
 			if (isset($jsonobject['response_headers']) && $response_headers = $jsonobject['response_headers']) {
-				foreach ($response_headers as $array) {
-					$id_array = array();
-					foreach ($array as $key => $value) {
-						$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
-
-						if ($header == null) {
-							$header = new Header();
-							$header->key = $key;
-							$header->value = $value;
-							$header->save();
-						}
-
-						$id_array[] = $header->id;
-					}
-					$endpoint->responseHeaders()->sync($id_array);
-				}	
+				$this->syncHeaders($endpoint, $response_headers, 'response');
 			}
 
 			return $endpoint->formatted();
@@ -213,6 +153,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 		}
 	}
 
+	//DELETE Methods
 
 	public function removeEndpoint($id)
 	{
@@ -221,8 +162,8 @@ class Endpoint extends Eloquent implements EndpointRepository
 		if ($endpoint != null) {
 
 			//Remove all headers by passing empty array to sync()
-			$endpoint->requestHeaders()->sync(array());
-			$endpoint->responseHeaders()->sync(array());
+			$this->syncHeaders($endpoint, array(), 'request');
+			$this->syncHeaders($endpoint, array(), 'response');
 
 			$endpoint->delete();
 
@@ -233,29 +174,83 @@ class Endpoint extends Eloquent implements EndpointRepository
 		return $endpoint->formatted();
 	}
 
+	
+
+	//Helper Methods
+
+	/*
+	This method is used to determine whether a given string matches up with an object in the objects table of the database
+	@param string $str String to check against database in %number% format
+	*/
+	public function parseObject($str) {
+		if(preg_match('/%(\d+)%/is', $str, $matches)){
+			if (($object = Object::find($matches[1])) != null) {
+
+				return $object;
+
+			} else {
+				throw new Exception("Object ID does not exist"); die();
+			}
+		} else {
+			throw new Exception("'Object' is not in %number% format"); die();
+		}
+	}
+
+	/*
+	Method used to sync headers and endpoints
+	@param Endpoint $endpoint The endpoint to sync request headers to
+	@param Array $headers Array retrieved from JSON of headers to put in database
+	@param String $type Type of headers to sync. Either 'request' 'response'
+	*/
+	public function syncHeaders($endpoint, $headers, $type)
+	{
+		$id_array = array();
+		foreach ($headers as $key => $value) {
+			$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
+
+			if ($header == null) {
+				$header = new Header();
+				$header->key = $key;
+				$header->value = $value;
+				$header->save();
+			}
+
+			$id_array[] = $header->id;
+		}	
+
+		if ($type == 'request') {
+			$endpoint->requestHeaders()->sync($id_array);
+		} else if ($type == 'response') {
+			$endpoint->responseHeaders()->sync($id_array);
+		}
+	}
+
 	public function formatted()
 	{
 		$id = $this->object;
 
 		if ($id != null) {
-			if (preg_match('/%(\d+)%/is', $id, $matches)) {
-				$id = $matches[1];
 
-				$object = Object::find($id);
-
-				if ($object != null) {
-					$object->json = json_decode($object->json);				
-					$this->object = $object;
-				} else {
-					throw new Exception('The ID in the database points to an object that does not exist.'); die();
-				}
-			} else {
-				throw new Exception('The ID in the database is not in %number% format'); die();
-			}
-
+			try {
+				$object = $this->parseObject($id);			
+				$object->json = json_decode($object->json);				
+				$this->object = $object;
+			} catch (Exception $e) {
+				throw $e; die();
+			}						
 		}
 
 		return $this->toArray();
+	}
+
+	public function requestHeaders()
+	{
+		return $this->belongsToMany('Header', 'request_headers_endpoints', 'endpoint_id', 'header_id');
+	}
+
+	public function responseHeaders()
+	{
+		return $this->belongsToMany('Header', 'response_headers_endpoints', 'endpoint_id', 'header_id');
 	}
 
 }
