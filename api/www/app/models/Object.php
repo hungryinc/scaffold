@@ -99,12 +99,23 @@ class Object extends Eloquent implements ObjectRepository
 
 		if ($object != null) {
 
-			//Remove all headers by passing empty array to sync()
-			$object->requestHeaders()->sync(array());
-			$object->responseHeaders()->sync(array());
+			$endpoints = Endpoint::get();
+			$array = array();
+			$key = '%'.$id.'%';
 
-			$object->delete();
-			
+			foreach ($endpoints as $endpoint) {
+				if ($endpoint->object == $key) {
+					$array[] =  $endpoint;
+				}
+			}
+
+			if (!count($array)) {
+				$object->delete();
+			} else {
+				throw new ObjectDeleteException("You can't delete this object because some endpoints are using it.", $array); die();
+			}
+
+
 		} else {
 			throw new Exception("Sorry, that endpoint ID does not exist"); die();
 		}
@@ -114,6 +125,7 @@ class Object extends Eloquent implements ObjectRepository
 
 	public function formatted()
 	{
+
 		$this->json = json_decode($this->json);
 		
 		return $this->toArray();

@@ -45,11 +45,15 @@ class ObjectController extends BaseController
 		$json = Input::get();
 
 		try {
+
 			$object['data'] = $this->object->editObject($id, $json);
+
 		} catch (Exception $e) {
+
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
+			
 		}	
 
 		return Response::json($object);
@@ -60,11 +64,22 @@ class ObjectController extends BaseController
 	public function removeObject($id)
 	{
 		try {
+
 			$object['data'] = $this->object->removeObject($id);
+
+		} catch (ObjectDeleteException $e) {
+			
+			$message = $e->getMessage();
+			$endpoints = $e->getEndpoints();
+			$error = array('message'=>$message, 'endpoints'=>$endpoints);
+			return $this->error(json_encode($error));
+
 		} catch (Exception $e) {
+
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
+
 		}
 
 		return Response::json($object);
