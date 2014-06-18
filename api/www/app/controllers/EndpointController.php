@@ -28,11 +28,15 @@ class EndpointController extends BaseController
 		$json = Input::get();
 
 		try {
+
 			$endpoint['data'] = $this->endpoint->createEndpoint($json);
+
 		} catch (Exception $e) {
+
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error($e);
+			return $this->error(json_encode($error));
+
 		}
 		
 		return Response::json($endpoint);
@@ -45,11 +49,15 @@ class EndpointController extends BaseController
 		$json = Input::get();
 
 		try {
+
 			$endpoint['data'] = $this->endpoint->editEndpoint($id, $json);
+
 		} catch (Exception $e) {
+
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
+
 		}	
 
 		return Response::json($endpoint);	
@@ -60,21 +68,19 @@ class EndpointController extends BaseController
 	public function removeEndpoint($id)
 	{
 		try {
+
 			$endpoint['data'] = $this->endpoint->removeEndpoint($id);
+
 	    } catch (Exception $e) {
+
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
+
 		}
 
 		return Response::json($endpoint);
+
 	}
 
-
-	//Default Case
-
-	public function missingMethod($parameters = array())
-	{
-		echo "Sorry, that API call does not exist.";
-	}
 }

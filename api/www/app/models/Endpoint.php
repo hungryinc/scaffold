@@ -92,6 +92,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 
 			return $newEndpoint->formatted();
+			
 		} else {
 			throw new Exception('Invalid JSON'); die();
 		}
@@ -174,7 +175,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 		return $endpoint->formatted();
 	}
 
-	
+
 
 	//Helper Methods
 

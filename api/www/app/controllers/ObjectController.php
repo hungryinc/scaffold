@@ -53,7 +53,7 @@ class ObjectController extends BaseController
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
-			
+
 		}	
 
 		return Response::json($object);
@@ -84,12 +84,5 @@ class ObjectController extends BaseController
 
 		return Response::json($object);
 	}
-
-
-	//Default Case
-
-	public function missingMethod($parameters = array())
-	{
-		echo "Sorry, that API call does not exist.";
-	}
+	
 }
