@@ -17,7 +17,7 @@ Route::get('/objects/{id}', 'ObjectController@getObjectById');
 
 Route::post('/objects', 'ObjectController@createObject');
 
-Route::put('/objects/{id}', 'ObjectController@changeObject');
+Route::put('/objects/{id}', 'ObjectController@editObject');
 
 Route::delete('/objects/{id}', 'ObjectController@removeObject');
 
@@ -30,6 +30,6 @@ Route::get('/endpoints/{id}', 'EndpointController@getEndpointByID');
 
 Route::post('/endpoints', 'EndpointController@createEndpoint');
 
-Route::put('/endpoints/{id}', 'EndpointController@changeEndpoint');
+Route::put('/endpoints/{id}', 'EndpointController@editEndpoint');
 
 Route::delete('/endpoints/{id}', 'EndpointController@removeEndpoint');

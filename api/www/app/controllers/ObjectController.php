@@ -8,23 +8,16 @@ class ObjectController extends BaseController
 	}
 
 	//GET Methods
-
 	public function getAllObjects()
 	{
-		$objects['data'] = $this->object->showObjects()->toArray();
-
+		$objects['data'] = $this->object->getObjects();
 		return Response::json($objects);
 	}
 
 	public function getObjectById($id)
 	{
-		$object = $this->object->where('id', $id)->get();
-
-		if ($object != null) {
-			return $object;
-		} else {
-			return "Sorry, ID Not Found";
-		}
+		$object['data'] = $this->object->getObjectByID($id);
+		return Response::json($object);
 	}
 
 
@@ -35,40 +28,45 @@ class ObjectController extends BaseController
 		$json = Input::get();
 
 		try {
-			$result['data'] = $this->object->createObject($json);
-			return Response::json($result);	
+			$object['data'] = $this->object->createObject($json);
 		} catch (Exception $e) {
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-
 			return $this->error(json_encode($error));
 		}
+		
+		return Response::json($object);	
 	}
-
 
 	//PUT Methods
 
-	public function changeObject($id)
+	public function editObject($id)
 	{
 		$json = Input::get();
 
 		try {
-			$result['data'] = $this->object->changeObject($id, $json);
-
-			return Response::json($result);	
+			$object['data'] = $this->object->editObject($id, $json);
 		} catch (Exception $e) {
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-
 			return $this->error(json_encode($error));
 		}	
+
+		return Response::json($object);
 	}
 
 	//DELETE Methods
 
 	public function removeObject($id)
 	{
-		$object['data'] = $this->object->remove($id);
+		try {
+			$object['data'] = $this->object->removeObject($id);
+		} catch (Exception $e) {
+			$message = $e->getMessage();
+			$error = array('message'=>$message);
+			return $this->error(json_encode($error));
+		}
+
 		return Response::json($object);
 	}
 

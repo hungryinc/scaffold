@@ -5,11 +5,26 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 	protected $hidden = array('pivot', 'created_at', 'updated_at');
 
-	public function showEndpoints() 
+	public function getEndpoints() 
 	{
 		$endpoints = $this->with('requestHeaders', 'responseHeaders')->get();
 
-		return $endpoints;
+		foreach ($endpoints as $endpoint) {
+			$endpoint = $endpoint->formatted();
+		}
+
+		return $endpoints->toArray();
+	}
+
+	public function getEndpointByID($id) 
+	{
+		$endpoint = $this->with('requestHeaders', 'responseHeaders')->find($id);
+
+		if ($endpoint != null) {
+			return $endpoint->formatted();
+		} else {
+			throw new Exception("Sorry, Endpoint ID Not Found"); die();
+		}
 	}
 
 	public function requestHeaders()
@@ -24,49 +39,50 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 	public function createEndpoint($jsonobject)
 	{
-		$newEntry = new Endpoint();
+		$newEndpoint = new Endpoint();
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
-				$newEntry->name = $name;
+				$newEndpoint->name = $name;
 			} else {
 				throw new Exception('Name field is missing'); die();
 			}
 
 			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
-				$newEntry->uri = $uri;
+				$newEndpoint->uri = $uri;
 			} else {
 				throw new Exception('URI field is missing'); die();
 			}
 
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
-				$newEntry->method = $method;
+				$newEndpoint->method = $method;
 			} else {
 				throw new Exception('Method field is missing'); die();
 			}
 
 			if (isset($jsonobject['response_code']) && $response_code = $jsonobject['response_code']) {
-				$newEntry->response_code = $response_code;
+				$newEndpoint->response_code = $response_code;
 			} else {
 				throw new Exception('"Response Code" field is missing'); die();
 			}
 
 			if (isset($jsonobject['object'])) {
 				if(preg_match('/%(\d+)%/is', $jsonobject['object'], $matches)){
-					$object = Object::find($matches[1]);
-
-					if ($object == null) {
+					if (Object::find($matches[1] == null)) {
 						throw new Exception("Object ID does not exist"); die();
+					} else {
+						$object = $matches[0];
+						$entry->object = $object;
 					}
 
-					$newEntry->object = json_encode($object);
+
 				} else {
 					throw new Exception("'Object' field is not valid"); die();
 				}
 			}
 
-			$newEntry->save();
+			$newEndpoint->save();
 
 			if (isset($jsonobject['request_headers']) && $request_headers = $jsonobject['request_headers']) {
 				foreach ($request_headers as $array) {
@@ -83,7 +99,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 						$id_array[] = $header->id;
 					}
-					$newEntry->requestHeaders()->sync($id_array);
+					$newEndpoint->requestHeaders()->sync($id_array);
 				}		
 			}
 
@@ -102,54 +118,55 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 						$id_array[] = $header->id;
 					}
-					$newEntry->responseHeaders()->sync($id_array);
+					$newEndpoint->responseHeaders()->sync($id_array);
 				}	
 			}
 
-			return $newEntry->formatted();
+			return $newEndpoint->formatted();
 		} else {
 			throw new Exception('Invalid JSON'); die();
 		}
 
 	}
 
-	public function changeEndpoint($id, $jsonobject) 
+	public function editEndpoint($id, $jsonobject) 
 	{
-		$entry = $this->find($id);
+		$endpoint = $this->find($id);
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
-				$entry->name = $name;
+				$endpoint->name = $name;
 			}
 
 			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
-				$entry->uri = $uri;
+				$endpoint->uri = $uri;
 			}
 
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
-				$entry->method = $method;
+				$endpoint->method = $method;
 			}
 
 			if (isset($jsonobject['response_code']) && $response_code = $jsonobject['response_code']) {
-				$entry->response_code = $response_code;
+				$endpoint->response_code = $response_code;
 			}
 
 			if (isset($jsonobject['object'])) {
 				if(preg_match('/%(\d+)%/is', $jsonobject['object'], $matches)){
-					$object = $matches[0];
-
-					if ($object == null) {
+					if (Object::find($matches[1]) != null) {
+						$object = $matches[0];
+						$endpoint->object = $object;
+					} else {
 						throw new Exception("Object ID does not exist"); die();
 					}
 
-					$entry->object = $object;
+
 				} else {
 					throw new Exception("'Object' field is not valid"); die();
 				}
 			}
 
-			$entry->save();
+			$endpoint->save();
 
 			if (isset($jsonobject['request_headers']) && $request_headers = $jsonobject['request_headers']) {
 				foreach ($request_headers as $array) {
@@ -166,7 +183,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 						$id_array[] = $header->id;
 					}
-					$entry->requestHeaders()->sync($id_array);
+					$endpoint->requestHeaders()->sync($id_array);
 				}			
 			}
 
@@ -185,11 +202,11 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 						$id_array[] = $header->id;
 					}
-					$entry->responseHeaders()->sync($id_array);
+					$endpoint->responseHeaders()->sync($id_array);
 				}	
 			}
 
-			return $entry->formatted();
+			return $endpoint->formatted();
 
 		} else {
 			throw new Exception('Invalid JSON'); die();
@@ -197,32 +214,46 @@ class Endpoint extends Eloquent implements EndpointRepository
 	}
 
 
-	public function remove($id)
+	public function removeEndpoint($id)
 	{
-		$entry = $this->find($id);
+		$endpoint = $this->find($id);
 
-		//Remove all headers by passing empty array to sync()
-		$entry->requestHeaders()->sync(array());
-		$entry->responseHeaders()->sync(array());
+		if ($endpoint != null) {
 
-		$entry->delete();
+			//Remove all headers by passing empty array to sync()
+			$endpoint->requestHeaders()->sync(array());
+			$endpoint->responseHeaders()->sync(array());
 
-		return $entry->formatted();
+			$endpoint->delete();
+
+		} else {
+			throw new Exception("Sorry, that endpoint ID does not exist"); die();
+		}
+
+		return $endpoint->formatted();
 	}
 
 	public function formatted()
 	{
 		$id = $this->object;
 
-		if(preg_match('/%(\d+)%/is', $id, $matches)){
-			$id = $matches[1];
+		if ($id != null) {
+			if (preg_match('/%(\d+)%/is', $id, $matches)) {
+				$id = $matches[1];
+
+				$object = Object::find($id);
+
+				if ($object != null) {
+					$object->json = json_decode($object->json);				
+					$this->object = $object;
+				} else {
+					throw new Exception('The ID in the database points to an object that does not exist.'); die();
+				}
+			} else {
+				throw new Exception('The ID in the database is not in %number% format'); die();
+			}
+
 		}
-
-		$object = Object::find($id);
-
-		$object->json = json_decode($object->json);
-		
-		$this->object = $object;
 
 		return $this->toArray();
 	}

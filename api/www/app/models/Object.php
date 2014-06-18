@@ -3,23 +3,38 @@
 class Object extends Eloquent implements ObjectRepository 
 {
 
-	public function showObjects() 
+	public function getObjects() 
 	{
 		$objects = $this->get();
 
-		return $objects;
+		foreach ($objects as $object) {
+			$object = $object->formatted();
+		}
+
+		return $objects->toArray();
+	}
+
+	public function getObjectByID($id) 
+	{
+		$endpoint = $this->find($id);
+
+		if ($endpoint != null) {
+			return $endpoint->formatted();
+		} else {
+			throw new Exception("Sorry, Object ID Not Found"); die();
+		}
 	}
 
 	public function createObject($jsonobject)
 	{
-		$newEntry = new Object();
+		$newObject = new Object();
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
 
 			if (isset($jsonobject['json'])) {
 
 				if (is_array($jsonobject['json']) AND count($jsonobject['json'])) {
-					$newEntry->json = json_encode($jsonobject['json']);
+					$newObject->json = json_encode($jsonobject['json']);
 				} else {
 					throw new Exception("'JSON' field is not valid");
 				}
@@ -28,54 +43,73 @@ class Object extends Eloquent implements ObjectRepository
 			}
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
-				$newEntry->name = $name;
+				$newObject->name = $name;
 			} else {
 				throw new Exception('Name field is missing');
 			}
 
 			if (isset($jsonobject['description']) && $description = $jsonobject['description']) {
-				$newEntry->description = $description;
+				$newObject->description = $description;
 			} else {
 				throw new Exception('Description field is missing');
 			}
 
-			$newEntry->save();
+			$newObject->save();
 
-			return $newEntry->formatted();
+			return $newObject->formatted();
 		} else {
 			throw new Exception('Invalid JSON');
 		}
 	}
 
-	public function changeObject($id, $jsonobject) 
+	public function editObject($id, $jsonobject) 
 	{
-		$entry = $this->find($id);
+		$object = $this->find($id);
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
 		
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
-				$entry->name = $name;
+				$object->name = $name;
 			}
 
 			if (isset($jsonobject['description']) && $description = $jsonobject['description']) {
-				$entry->description = $description;
+				$object->description = $description;
 			}
 
 			if (isset($jsonobject['json'])) {
 
 				if (is_array($jsonobject['json']) AND count($jsonobject['json'])) {
-					$entry->json = json_encode($jsonobject['json']);
+					$object->json = json_encode($jsonobject['json']);
 				} else {
 					throw new Exception("the field 'JSON' is not valid");
 				}
 			}
 
-			$entry->save();
+			$object->save();
 
-			return $entry->formatted();
+			return $object->formatted();
 		} else {
 			throw new Exception('Invalid JSON');
 		}
+	}
+
+	public function removeObject($id)
+	{
+		$object = $this->find($id);
+
+		if ($object != null) {
+
+			//Remove all headers by passing empty array to sync()
+			$object->requestHeaders()->sync(array());
+			$object->responseHeaders()->sync(array());
+
+			$object->delete();
+			
+		} else {
+			throw new Exception("Sorry, that endpoint ID does not exist"); die();
+		}
+
+		return $object->formatted();
 	}
 
 	public function formatted()
@@ -83,14 +117,6 @@ class Object extends Eloquent implements ObjectRepository
 		$this->json = json_decode($this->json);
 		
 		return $this->toArray();
-	}
-
-	public function remove($id)
-	{
-		$entry = $this->find($id);
-		$entry->delete();
-
-		return $entry->toArray();
 	}
 
 }

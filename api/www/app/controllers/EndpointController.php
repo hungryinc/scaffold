@@ -11,23 +11,15 @@ class EndpointController extends BaseController
 
 	public function getAllEndpoints()
 	{
-		$endpoints['data'] = $this->endpoint->showEndpoints()->toArray();
-
+		$endpoints['data'] = $this->endpoint->getEndpoints();
 		return Response::json($endpoints);
 	}
 
 	public function getEndpointById($id)
 	{
-		$endpoint = $this->endpoint->with('requestHeaders', 'responseHeaders')->find($id);
-
-		if ($endpoint != null) {
-			return Response::json($endpoint);
-		} else {
-			return "Sorry, ID Not Found";
-		}
+		$endpoint['data'] = $this->endpoint->getEndpointByID($id);
+		return Response::json($endpoint);
 	}
-
-
 
 	//POST Methods
 
@@ -36,43 +28,47 @@ class EndpointController extends BaseController
 		$json = Input::get();
 
 		try {
-			$result['data'] = $this->endpoint->createEndpoint($json);
-			return Response::json($result);	
+			$endpoint['data'] = $this->endpoint->createEndpoint($json);
 		} catch (Exception $e) {
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-
 			return $this->error(json_encode($error));
 		}
+		
+		return Response::json($endpoint);
 	}
-
-
 
 	//PUT Methods
 
-	public function changeEndpoint($id)
+	public function editEndpoint($id)
 	{
 		$json = Input::get();
 
 		try {
-			$result['data'] = $this->endpoint->changeEndpoint($id, $json);
-			return Response::json($result);	
+			$endpoint['data'] = $this->endpoint->editEndpoint($id, $json);
 		} catch (Exception $e) {
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-
-			return $this->error($e);
+			return $this->error(json_encode($error));
 		}	
+
+		return Response::json($endpoint);	
 	}
 
 	//DELETE Methods
 
 	public function removeEndpoint($id)
 	{
-		$result['data'] = $this->endpoint->remove($id);
-		return Response::json($result);
-	}
+		try {
+			$endpoint['data'] = $this->endpoint->removeEndpoint($id);
+	    } catch (Exception $e) {
+			$message = $e->getMessage();
+			$error = array('message'=>$message);
+			return $this->error(json_encode($error));
+		}
 
+		return Response::json($endpoint);
+	}
 
 
 	//Default Case
