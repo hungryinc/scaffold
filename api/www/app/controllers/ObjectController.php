@@ -8,6 +8,7 @@ class ObjectController extends BaseController
 	}
 
 	//GET Methods
+
 	public function getAllObjects()
 	{
 		$objects['data'] = $this->object->getObjects();
@@ -30,13 +31,16 @@ class ObjectController extends BaseController
 		try {
 			$object['data'] = $this->object->createObject($json);
 		} catch (Exception $e) {
+
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
+			
 		}
 		
 		return Response::json($object);	
 	}
+
 
 	//PUT Methods
 

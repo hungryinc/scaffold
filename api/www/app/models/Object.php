@@ -7,8 +7,12 @@ class Object extends Eloquent implements ObjectRepository
 	{
 		$objects = $this->get();
 
-		foreach ($objects as $object) {
-			$object = $object->formatted();
+		if ($objects != null) {
+			foreach ($objects as $object) {
+				$object = $object->formatted();
+			}
+		} else {
+			throw new Exception("There was a problem retrieving the objects from the database."); die();
 		}
 
 		return $objects->toArray();
@@ -38,6 +42,7 @@ class Object extends Eloquent implements ObjectRepository
 				} else {
 					throw new Exception("'JSON' field is not valid");
 				}
+
 			} else {
 				throw new Exception("JSON field is missing");
 			}
@@ -119,45 +124,43 @@ class Object extends Eloquent implements ObjectRepository
 		if ($object != null) {
 
 			$endpoints = Endpoint::get();
-			$array = array();
-			$id_modified = '<%'.$id.'%>';
 
-			foreach ($endpoints as $endpoint) {
-				$jsonobject = json_decode($endpoint->json);	
+			if ($endpoints != null) {
+				$array = array();
+				$id_modified = '<%'.$id.'%>';
 
-				foreach ($jsonobject as $key => $value) {
-					if ($value == $id_modified) {
-						unset($jsonobject->$key);
-						$array[] = $endpoint->id;
-						$endpoint->json = json_encode($jsonobject);
-						$endpoint->save();
-						break;
+				foreach ($endpoints as $endpoint) {
+					$jsonobject = json_decode($endpoint->json);	
+
+					foreach ($jsonobject as $key => $value) {
+						if ($value == $id_modified) {
+							unset($jsonobject->$key);
+							$array[] = $endpoint->id;
+							$endpoint->json = json_encode($jsonobject);
+							$endpoint->save();
+							break;
+						}
 					}
 				}
-			}
 
 
-			if (count($array)) {
+				if (count($array)) {
 
-				if (count($array) == 1) {
-					$warning = "The object was deleted and is no longer being referenced by the following endpoint: " . $array[0];
-				} else {
-					$warning = "The object was deleted and is no longer being referenced by the following endpoints: ";
+					if (count($array) == 1) {
+						$warning = "The object was deleted and is no longer being referenced by the following endpoint: " . $array[0];
+					} else {
+						$warning = "The object was deleted and is no longer being referenced by the following endpoints: ";
 
-					foreach ($array as $value) {
-						$warning .= $value . ", ";
-					}
-				}			
+						foreach ($array as $value) {
+							$warning .= $value . ", ";
+						}
+					}			
 
-				$object->warning = $warning;
-			} 
+					$object->warning = $warning;
+				} 
+			}		
 
 			$object->delete();
-
-			// else {
-			// 	throw new ObjectDeleteException("You can't delete this object because some endpoints are referencing it.", $array); die();
-			// }
-
 
 		} else {
 			throw new Exception("Sorry, that endpoint ID does not exist"); die();

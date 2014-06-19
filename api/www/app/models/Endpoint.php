@@ -18,7 +18,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 
 		} else {
-			throw new Exception("The model is having trouble accessing the MySQL database."); die();
+			throw new Exception("There was a problem retrieving the endpoints from the database."); die();
 		}
 
 		return $endpoints->toArray();
@@ -79,28 +79,27 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 
 			if (isset($jsonobject['json']) && $json = $jsonobject['json']) {
-				// try {
 
-				if (json_encode($json) != null) {
+				if (json_encode($json)) {
+				
+					foreach ($json as $key => $value) {
+						if (is_string($value)) {
+							if (preg_match('/<%(\d+)%>/is', $value, $matches)) {
+								if ( ! Object::find($matches[1])) {
+									throw new Exception("Object ID '" . $matches[1] . "' does not exist");
+								}
+							}
+						}
+					}
+
 					$newEndpoint->json = json_encode($json);
-
+				
 				} else {
 					throw new Exception("The field 'json' is not valid"); die();
 				}
 
-
-
-
-					// $object = $this->parseObject($id);
-
-					// if ($object != null) {
-					// 	$endpoint->object = $id;
-					// }
-
-				// } catch (Exception $e) {
-				// 	throw $e; die();
-				// }
 			}
+
 
 			$newEndpoint->save();
 
@@ -117,7 +116,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 
 			return $newEndpoint->formatted();
-			
+
 		} else {
 			throw new Exception('Invalid JSON'); die();
 		}
@@ -158,24 +157,26 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 
 			if (isset($jsonobject['json']) && $json = $jsonobject['json']) {
-				// try {
 
-				if (json_encode($json) != null) {
+				if (json_encode($json)) {
+					
+					foreach ($json as $key => $value) {
+						if (is_string($value)) {
+							if (preg_match('/<%(\d+)%>/is', $value, $matches)) {
+								if ( ! Object::find($matches[1])) {
+									throw new Exception("Object ID does not exist");
+								}
+							}
+						}
+					}
+					
 					$endpoint->json = json_encode($json);
+				
 				} else {
 					throw new Exception("The field 'json' is not valid"); die();
 				}
 
-					// $object = $this->parseObject($id);
-
-					// if ($object != null) {
-					// 	$endpoint->object = $id;
-					// }
-
-				// } catch (Exception $e) {
-				// 	throw $e; die();
-				// }
-			}
+			} 
 
 			$endpoint->save();
 
@@ -190,6 +191,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 			if (isset($jsonobject['response_headers']) && $response_headers = $jsonobject['response_headers']) {
 				$this->syncData($endpoint, $response_headers, 'response');
 			}
+
 
 			return $endpoint->formatted();
 
@@ -228,19 +230,19 @@ class Endpoint extends Eloquent implements EndpointRepository
 	This method is used to determine whether a given string matches up with an object in the objects table of the database
 	@param string $str String to check against database in %number% format
 	*/
-	// public function parseObject($str) {
-	// 	if (preg_match('/<%(\d+)%>/is', $str, $matches)){
-	// 		if (($object = Object::find($matches[1])) != null) {
+	public function parseObject($str) {
+		if (preg_match('/<%(\d+)%>/is', $str, $matches)){
+			if (($object = Object::find($matches[1])) != null) {
 
-	// 			return $object;
+				return $object;
 
-	// 		} else {
-	// 			throw new Exception("Object ID does not exist"); die();
-	// 		}
-	// 	} else {
-	// 		throw new Exception("'Object' is not in %number% format"); die();
-	// 	}
-	// }
+			} else {
+				throw new Exception("Object ID does not exist"); die();
+			}
+		} else {
+			throw new Exception("'Object' is not in %number% format"); die();
+		}
+	}
 
 	/*
 	Method used to sync data between different mysql tables
