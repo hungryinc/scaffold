@@ -1,0 +1,1 @@
+<div class=slide-animation>Filter:<input type=text ng-model=searchText><br><br><table class=names><tr><td style="font-weight: bold;">NAME</td><td style="font-weight: bold;">COLOR</td></tr><tr ng-repeat="person in names | filter:searchText"><td>{{ person.name }}</td><td>{{ person.color }}</td></tr></table><a ui-sref=List>List</a></div>

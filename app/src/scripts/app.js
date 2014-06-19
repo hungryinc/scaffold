@@ -22,10 +22,12 @@ var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 
 
 scaffold.config(require("./routes/MainRoutes"));
 
-scaffold.controller('ObjectCtrl', ["$scope", require("./controllers/ObjectCtrl")]);
+scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$cookies", require("./controllers/ObjectCtrl")]);
 scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);
 scaffold.controller('MainCtrl', ["$scope", "MainService", "$rootScope", "$cookies", require("./controllers/MainServiceCtrl")]);
 
+
 scaffold.service('MainService', ["$resource", "$q", "$rootScope", require("./services/MainService")]);
+scaffold.service('ObjectService', ["$resource", "$q", "$rootScope", require("./services/ObjectService")]);
 
 angular.bootstrap(document, ['Scaffold']);

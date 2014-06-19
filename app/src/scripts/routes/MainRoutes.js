@@ -32,6 +32,15 @@ module.exports = function($stateProvider, $urlRouterProvider, $routeProvider, $l
                 controller: "MainCtrl"
             }
         },
+    }).state("Objects", {
+        url: "/scaffold/objects",
+        views: {
+            layout: {
+                templateUrl: "/release/html/layouts/scaffold/objects.html",
+                controller: "ObjectCtrl"
+            }
+        },
+
     });
 
 
