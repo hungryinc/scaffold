@@ -14,6 +14,7 @@
 App::bind('ObjectRepository', 'Object');
 App::bind('EndpointRepository', 'Endpoint');
 App::bind('HeaderRepository', 'Header');
+App::bind('ProjectRepository', 'Project');
 
 ClassLoader::addDirectories(array(
 

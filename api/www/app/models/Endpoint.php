@@ -43,6 +43,17 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
 
+			if (isset($jsonobject['project_id']) && $project_id = $jsonobject['project_id']) {
+				$newEndpoint->project_id = $project_id;
+
+				if (!Project::find($project_id)) {
+					throw new Exception("That project ID does not exist in the database"); die();
+				}
+
+			} else {
+				throw new Exception('"project_id" field is missing'); die();
+			}
+
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$newEndpoint->name = $name;
 			} else {
@@ -67,28 +78,42 @@ class Endpoint extends Eloquent implements EndpointRepository
 				throw new Exception('"Response Code" field is missing'); die();
 			}
 
-			if (isset($jsonobject['object']) && $id = $jsonobject['object']) {
-				try {
+			if (isset($jsonobject['json']) && $json = $jsonobject['json']) {
+				// try {
 
-					$object = $this->parseObject($id);
+				if (json_encode($json) != null) {
+					$newEndpoint->json = json_encode($json);
 
-					if ($object != null) {
-						$newEndpoint->object = $id;
-					}
-
-				} catch (Exception $e) {
-					throw $e; die();
+				} else {
+					throw new Exception("The field 'json' is not valid"); die();
 				}
+
+
+
+
+					// $object = $this->parseObject($id);
+
+					// if ($object != null) {
+					// 	$endpoint->object = $id;
+					// }
+
+				// } catch (Exception $e) {
+				// 	throw $e; die();
+				// }
 			}
 
 			$newEndpoint->save();
 
+			if (isset($jsonobject['project_id']) && $project = $jsonobject['project_id']) {
+				$this->syncData($newEndpoint, $project, 'project');		
+			}
+
 			if (isset($jsonobject['request_headers']) && $request_headers = $jsonobject['request_headers']) {
-				$this->syncHeaders($newEndpoint, $request_headers, 'request');
+				$this->syncData($newEndpoint, $request_headers, 'request');
 			}
 
 			if (isset($jsonobject['response_headers']) && $response_headers = $jsonobject['response_headers']) {
-				$this->syncHeaders($newEndpoint, $response_headers, 'response');	
+				$this->syncData($newEndpoint, $response_headers, 'response');	
 			}
 
 			return $newEndpoint->formatted();
@@ -103,9 +128,18 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 	public function editEndpoint($id, $jsonobject) 
 	{
+
 		$endpoint = $this->find($id);
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
+
+			if (isset($jsonobject['project_id']) && $project_id = $jsonobject['project_id']) {
+				$endpoint->project_id = $project_id;
+
+				if (!Project::find($project_id)) {
+					throw new Exception("That project ID does not exist in the database"); die();
+				}
+			}
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$endpoint->name = $name;
@@ -123,28 +157,38 @@ class Endpoint extends Eloquent implements EndpointRepository
 				$endpoint->response_code = $response_code;
 			}
 
-			if (isset($jsonobject['object']) && $id = $jsonobject['object']) {
-				try {
+			if (isset($jsonobject['json']) && $json = $jsonobject['json']) {
+				// try {
 
-					$object = $this->parseObject($id);
-
-					if ($object != null) {
-						$endpoint->object = $id;
-					}
-
-				} catch (Exception $e) {
-					throw $e; die();
+				if (json_encode($json) != null) {
+					$endpoint->json = json_encode($json);
+				} else {
+					throw new Exception("The field 'json' is not valid"); die();
 				}
+
+					// $object = $this->parseObject($id);
+
+					// if ($object != null) {
+					// 	$endpoint->object = $id;
+					// }
+
+				// } catch (Exception $e) {
+				// 	throw $e; die();
+				// }
 			}
 
 			$endpoint->save();
 
+			if (isset($jsonobject['project_id']) && $project = $jsonobject['project_id']) {
+				$this->syncData($endpoint, $project, 'project');		
+			}
+
 			if (isset($jsonobject['request_headers']) && $request_headers = $jsonobject['request_headers']) {
-				$this->syncHeaders($endpoint, $request_headers, 'request');		
+				$this->syncData($endpoint, $request_headers, 'request');		
 			}
 
 			if (isset($jsonobject['response_headers']) && $response_headers = $jsonobject['response_headers']) {
-				$this->syncHeaders($endpoint, $response_headers, 'response');
+				$this->syncData($endpoint, $response_headers, 'response');
 			}
 
 			return $endpoint->formatted();
@@ -163,8 +207,9 @@ class Endpoint extends Eloquent implements EndpointRepository
 		if ($endpoint != null) {
 
 			//Remove all headers by passing empty array to sync()
-			$this->syncHeaders($endpoint, array(), 'request');
-			$this->syncHeaders($endpoint, array(), 'response');
+			$this->syncData($endpoint, array(), 'request');
+			$this->syncData($endpoint, array(), 'response');
+			$this->syncData($endpoint, array(), 'project');
 
 			$endpoint->delete();
 
@@ -183,63 +228,59 @@ class Endpoint extends Eloquent implements EndpointRepository
 	This method is used to determine whether a given string matches up with an object in the objects table of the database
 	@param string $str String to check against database in %number% format
 	*/
-	public function parseObject($str) {
-		if(preg_match('/%(\d+)%/is', $str, $matches)){
-			if (($object = Object::find($matches[1])) != null) {
+	// public function parseObject($str) {
+	// 	if (preg_match('/<%(\d+)%>/is', $str, $matches)){
+	// 		if (($object = Object::find($matches[1])) != null) {
 
-				return $object;
+	// 			return $object;
 
-			} else {
-				throw new Exception("Object ID does not exist"); die();
-			}
-		} else {
-			throw new Exception("'Object' is not in %number% format"); die();
-		}
-	}
+	// 		} else {
+	// 			throw new Exception("Object ID does not exist"); die();
+	// 		}
+	// 	} else {
+	// 		throw new Exception("'Object' is not in %number% format"); die();
+	// 	}
+	// }
 
 	/*
-	Method used to sync headers and endpoints
+	Method used to sync data between different mysql tables
 	@param Endpoint $endpoint The endpoint to sync request headers to
 	@param Array $headers Array retrieved from JSON of headers to put in database
-	@param String $type Type of headers to sync. Either 'request' 'response'
+	@param String $type Type of data to sync. Either 'request' 'response' or 'project'
 	*/
-	public function syncHeaders($endpoint, $headers, $type)
+	public function syncData($endpoint, $data, $type)
 	{
 		$id_array = array();
-		foreach ($headers as $key => $value) {
-			$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
+		if (is_array($data)) {
+			foreach ($data as $key => $value) {
+				$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
 
-			if ($header == null) {
-				$header = new Header();
-				$header->key = $key;
-				$header->value = $value;
-				$header->save();
-			}
+				if ($header == null) {
+					$header = new Header();
+					$header->key = $key;
+					$header->value = $value;
+					$header->save();
+				}
 
-			$id_array[] = $header->id;
-		}	
+				$id_array[] = $header->id;
+			}	
+		} else {
+			$id_array[] = $data;
+		}
 
 		if ($type == 'request') {
 			$endpoint->requestHeaders()->sync($id_array);
 		} else if ($type == 'response') {
 			$endpoint->responseHeaders()->sync($id_array);
+		} else if ($type == 'project') {
+			$endpoint->project();
 		}
 	}
 
 	public function formatted()
 	{
-		$id = $this->object;
 
-		if ($id != null) {
-
-			try {
-				$object = $this->parseObject($id);			
-				$object->json = json_decode($object->json);				
-				$this->object = $object;
-			} catch (Exception $e) {
-				throw $e; die();
-			}						
-		}
+		$this->json = json_decode($this->json);
 
 		return $this->toArray();
 	}
@@ -252,6 +293,11 @@ class Endpoint extends Eloquent implements EndpointRepository
 	public function responseHeaders()
 	{
 		return $this->belongsToMany('Header', 'response_headers_endpoints', 'endpoint_id', 'header_id');
+	}
+
+	public function project()
+	{
+		return $this->belongsTo('Project');
 	}
 
 }

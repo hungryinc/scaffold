@@ -16,10 +16,10 @@ class Object extends Eloquent implements ObjectRepository
 
 	public function getObjectByID($id) 
 	{
-		$endpoint = $this->find($id);
+		$object = $this->find($id);
 
-		if ($endpoint != null) {
-			return $endpoint->formatted();
+		if ($object != null) {
+			return $object->formatted();
 		} else {
 			throw new Exception("Sorry, Object ID Not Found"); die();
 		}
@@ -40,6 +40,17 @@ class Object extends Eloquent implements ObjectRepository
 				}
 			} else {
 				throw new Exception("JSON field is missing");
+			}
+
+			if (isset($jsonobject['project_id']) && $project_id = $jsonobject['project_id']) {
+				$newObject->project_id = $project_id;
+
+				if (!Project::find($project_id)) {
+					throw new Exception("That project ID does not exist in the database"); die();
+				}
+
+			} else {
+				throw new Exception('"project_id" field is missing'); die();
 			}
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
@@ -67,7 +78,7 @@ class Object extends Eloquent implements ObjectRepository
 		$object = $this->find($id);
 
 		if (is_array($jsonobject) AND count($jsonobject)) {
-		
+
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$object->name = $name;
 			}
@@ -82,6 +93,14 @@ class Object extends Eloquent implements ObjectRepository
 					$object->json = json_encode($jsonobject['json']);
 				} else {
 					throw new Exception("the field 'JSON' is not valid");
+				}
+			}
+
+			if (isset($jsonobject['project_id']) && $project_id = $jsonobject['project_id']) {
+				$newObject->project_id = $project_id;
+
+				if (!Project::find($project_id)) {
+					throw new Exception("That project ID does not exist in the database"); die();
 				}
 			}
 
@@ -101,19 +120,43 @@ class Object extends Eloquent implements ObjectRepository
 
 			$endpoints = Endpoint::get();
 			$array = array();
-			$key = '%'.$id.'%';
+			$id_modified = '<%'.$id.'%>';
 
 			foreach ($endpoints as $endpoint) {
-				if ($endpoint->object == $key) {
-					$array[] =  $endpoint;
+				$jsonobject = json_decode($endpoint->json);	
+
+				foreach ($jsonobject as $key => $value) {
+					if ($value == $id_modified) {
+						unset($jsonobject->$key);
+						$array[] = $endpoint->id;
+						$endpoint->json = json_encode($jsonobject);
+						$endpoint->save();
+						break;
+					}
 				}
 			}
 
-			if (!count($array)) {
-				$object->delete();
-			} else {
-				throw new ObjectDeleteException("You can't delete this object because some endpoints are referencing it.", $array); die();
-			}
+
+			if (count($array)) {
+
+				if (count($array) == 1) {
+					$warning = "The object was deleted and is no longer being referenced by the following endpoint: " . $array[0];
+				} else {
+					$warning = "The object was deleted and is no longer being referenced by the following endpoints: ";
+
+					foreach ($array as $value) {
+						$warning .= $value . ", ";
+					}
+				}			
+
+				$object->warning = $warning;
+			} 
+
+			$object->delete();
+
+			// else {
+			// 	throw new ObjectDeleteException("You can't delete this object because some endpoints are referencing it.", $array); die();
+			// }
 
 
 		} else {
@@ -129,6 +172,11 @@ class Object extends Eloquent implements ObjectRepository
 		$this->json = json_decode($this->json);
 		
 		return $this->toArray();
+	}
+
+	public function project()
+	{
+		return $this->belongsTo('Project');
 	}
 
 }

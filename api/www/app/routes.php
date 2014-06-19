@@ -33,3 +33,14 @@ Route::post('/endpoints', 'EndpointController@createEndpoint');
 Route::put('/endpoints/{id}', 'EndpointController@editEndpoint');
 
 Route::delete('/endpoints/{id}', 'EndpointController@removeEndpoint');
+
+
+
+
+Route::get('/projects/{id}', 'ProjectController@getProjectByID');
+
+Route::post('/projects', 'ProjectController@createProject');
+
+Route::put('/projects/{id}', 'ProjectController@editProject');
+
+Route::delete('/projects/{id}', 'ProjectController@removeProject');

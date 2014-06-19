@@ -6,7 +6,13 @@ class ObjectDeleteException extends Exception {
 
 	public function __construct($message, $endpoints, $code = 0, Exception $previous = null) {
 
+
+
         $this->endpoints = $endpoints;
+
+        foreach ($this->endpoints as $endpoint) {
+        	$endpoint->json = json_decode($endpoint->json);
+        }
 
         parent::__construct($message, $code, $previous);
 

@@ -1,71 +1,67 @@
 <?php
 
-class ObjectController extends BaseController
+class ProjectController extends BaseController
 {
-	public function __construct(ObjectRepository $object)
+	public function __construct(ProjectRepository $project)
 	{
-		$this->object = $object;
+		$this->project = $project;
 	}
 
 	//GET Methods
-	public function getAllObjects()
+	public function getAllProjects()
 	{
-		$objects['data'] = $this->object->getObjects();
-		return Response::json($objects);
+		$projects['data'] = $this->project->getProjects();
+		return Response::json($projects);
 	}
 
-	public function getObjectById($id)
+	public function getProjectById($id)
 	{
-		$object['data'] = $this->object->getObjectByID($id);
-		return Response::json($object);
+		$project['data'] = $this->project->getProjectByID($id);
+		return Response::json($project);
 	}
 
 
 	//POST Methods
 
-	public function createObject()
+	public function createProject()
 	{
 		$json = Input::get();
 
 		try {
-			$object['data'] = $this->object->createObject($json);
+			$project['data'] = $this->project->createProject($json);
 		} catch (Exception $e) {
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
 		}
 		
-		return Response::json($object);	
+		return Response::json($project);	
 	}
 
 	//PUT Methods
 
-	public function editObject($id)
+	public function editProject($id)
 	{
 		$json = Input::get();
 
 		try {
-
-			$object['data'] = $this->object->editObject($id, $json);
-
+			$project['data'] = $this->project->editProject($id, $json);
 		} catch (Exception $e) {
-
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error(json_encode($error));
-
 		}	
 
-		return Response::json($object);
+		return Response::json($project);
 	}
 
 	//DELETE Methods
 
-	public function removeObject($id)
+	public function removeProject($id)
 	{
 		try {
 
-			$object['data'] = $this->object->removeObject($id);
+			$project['data'] = $this->project->removeProject($id);
 
 		} catch (ObjectDeleteException $e) {
 			
@@ -78,11 +74,11 @@ class ObjectController extends BaseController
 
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error($e);
+			return $this->error(json_encode($error));
 
 		}
 
-		return Response::json($object);
+		return Response::json($project);
 	}
 	
 }
