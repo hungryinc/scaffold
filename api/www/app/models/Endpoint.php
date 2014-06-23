@@ -81,19 +81,14 @@ class Endpoint extends Eloquent implements EndpointRepository
 			if (isset($jsonobject['json']) && $json = $jsonobject['json']) {
 
 				if (json_encode($json)) {
-				
+
 					foreach ($json as $key => $value) {
-						if (is_string($value)) {
-							if (preg_match('/<%(\d+)%>/is', $value, $matches)) {
-								if ( ! Object::find($matches[1])) {
-									throw new Exception("Object ID '" . $matches[1] . "' does not exist");
-								}
-							}
-						}
+						$this->objectCheck($value);
+						
 					}
 
 					$newEndpoint->json = json_encode($json);
-				
+
 				} else {
 					throw new Exception("The field 'json' is not valid"); die();
 				}
@@ -161,17 +156,11 @@ class Endpoint extends Eloquent implements EndpointRepository
 				if (json_encode($json)) {
 					
 					foreach ($json as $key => $value) {
-						if (is_string($value)) {
-							if (preg_match('/<%(\d+)%>/is', $value, $matches)) {
-								if ( ! Object::find($matches[1])) {
-									throw new Exception("Object ID does not exist");
-								}
-							}
-						}
+						$this->objectCheck($value);
 					}
 					
 					$endpoint->json = json_encode($json);
-				
+
 				} else {
 					throw new Exception("The field 'json' is not valid"); die();
 				}
@@ -276,6 +265,17 @@ class Endpoint extends Eloquent implements EndpointRepository
 			$endpoint->responseHeaders()->sync($id_array);
 		} else if ($type == 'project') {
 			$endpoint->project();
+		}
+	}
+
+	public function objectCheck($value)
+	{
+		if (is_string($value)) {
+			if (preg_match('/<%(\d+)%>/is', $value, $matches)) {
+				if ( ! Object::find($matches[1])) {
+					throw new Exception("Object ID '" . $matches[1] . "' does not exist");
+				}
+			}
 		}
 	}
 

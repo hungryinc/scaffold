@@ -10,7 +10,7 @@ module.exports = function($scope, ObjectService, $rootScope, $cookies) {
             $scope.objects = objects;
         });
 
-    }
+    };
 
     refreshList();
 
@@ -23,40 +23,23 @@ module.exports = function($scope, ObjectService, $rootScope, $cookies) {
 
     $scope.create = function() {
 
-        var newObject = $scope.add;
+        var newObject = $scope.addObject;
         console.log(newObject['name']);
 
-        MainService.create(newObject).then(function() {
+        ObjectService.create(newObject).then(function() {
             refreshList()
         });
 
-        $scope.add = "";
-    }
+        $scope.addObject = "";
+    };
 
+    //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT
+    $scope.hideHashkey = function(object) {
+        var output;
 
+        output = angular.toJson(object);
+        // output = angular.fromJson(output);
 
-
-
-    $scope.names = [{
-        "name": "Alex",
-        "color": "Blue"
-    }, {
-        "name": "Zach",
-        "color": "Red"
-    }, {
-        "name": "Steve",
-        "color": "Yellow"
-    }, {
-        "name": "Brady",
-        "color": "Green"
-    }, {
-        "name": "Niko",
-        "color": "Orange"
-    }, {
-        "name": "John",
-        "color": "Purple"
-    }, {
-        "name": "Kathy",
-        "color": "Pink"
-    }];
-};
+        return angular.fromJson(output);
+    };
+}

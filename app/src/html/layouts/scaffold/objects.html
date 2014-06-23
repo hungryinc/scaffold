@@ -1,32 +1,46 @@
-<div class="slide-animation">
+<div class="objects">
 
-	Filter: <input type="text" ng-model="searchText" />
+	<form style="margin-left: 300px; margin-top: 10px;" ng-submit="create()">
+		<textarea rows="10" cols="50" ng-model="addObject" placeholder="Create New Object (INPUT JSON)" id="addObject"></textarea>
+		<button type="submit" style="margin-left: 10px;">Submit</button>		
+	</form>	<hr />
 
+	<span style="margin: 350px;">Filter: <input type="text" ng-model="searchText" style="margin: 10px;"/></span>
 	<br />
 	<br />
 
 	<table border = "1" style="text-align: center;">
 
-		<tr>
-			<td style="font-weight: bold;">ID</td>
-			<td style="font-weight: bold;">PROJECT_ID</td>
-			<td style="font-weight: bold;">NAME</td>
-			<td style="font-weight: bold;">JSON VALUES</td>	
+		<tr style="font-weight: bold;">
+			<th>OBJECT_ID</th>
+			<th>PROJECT_ID</th>
+			<th>NAME</th>
+			<th>DESCRIPTION</th>
+			<th>Created</th>
+			<th>JSON</th>	
 
 		</tr>
-		<tr ng-repeat="object in objects | filter:searchText">
+		<tr ng-repeat="object in objects | filter:searchText" class="object-table">
 			<td> {{ object.id }} </td>
 			<td> {{ object.project_id }} </td>
 			<td> {{ object.name }} </td>
-			<td> 
-				<table>
-					<tr ng-repeat="(key, value) in object.json">
-						<td>{{ key }}: </td>
-						<td>{{ value  }}</td>
-					</tr>
-				</table>
+			<td> {{ object.description }} </td>
+			<td> {{ object.updated_at | dateLocalize | date:'MMM d @ hh:mma'}} </td>
+			<td style="text-align: left;"> 
+				<pre pretty-json="object.json" />
+					<!--
+					<table>
+						<tr ng-repeat="(key, value) in object.json">
+							<td>{{ key }}: </td>
+							<td>{{ value  }}</td>
+						</tr>
+					</table>
+				-->
 			</td>
 		</tr>
 	</table>
+	<hr />
+	<h3>RAW JSON DATA</h3>
+	<pre pretty-json="objects" />
 
 </div>

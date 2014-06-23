@@ -1,5 +1,6 @@
 @import url(//fonts.googleapis.com/css?family=Lato:700);
 @import url(ng-quick-date.css);
+@import url(ng-prettyjson.min.css);
 body {
   font-family: 'Lato', sans-serif;
   width: 70%;
@@ -17,19 +18,25 @@ button {
   color: #8c8a8b;
 }
 /*TABLE*/
-div.todo > table {
+div.objects > table,
+div.endpoints > table {
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   font-size: 115%;
   width: auto;
   overflow: auto;
 }
-div.todo > table > tbody > tr > th {
+div.objects > table > tbody > tr > th,
+div.endpoints > table > tbody > tr > th {
   background-color: #70c469;
   font-weight: normal;
   color: white;
-  padding: 20px 30px;
+  padding: 20px 15px;
   text-align: center;
+}
+div.objects > table > tbody > tr > td,
+div.endpoints > table > tbody > tr > td {
+  padding: 2px 10px;
 }
 .high {
   background-color: #f54747;
@@ -59,47 +66,43 @@ div.todo > table > tbody > tr > th {
 .calendar .quickdate-calendar th {
   background-color: red;
 }
-/*AngularJS ng-animate*/
-.high.ng-enter {
-  transition: 0.25s;
+/*AngularJS animations*/
+.object-table.ng-enter,
+.object-table.ng-leave,
+.object-table.ng-move,
+.endpoint-table.ng-enter,
+.endpoint-table.ng-leave,
+.endpoint-table.ng-move {
+  -webkit-transition: 0.5s linear all;
+  -moz-transition: 0.5s linear all;
+  -o-transition: 0.5s linear all;
+  transition: 0.5s linear all;
+}
+.object-table.ng-enter,
+.object-table.ng-move,
+.endpoint-table.ng-enter,
+.endpoint-table.ng-move {
   opacity: 0;
+  height: 0;
+  overflow: hidden;
 }
-.high.ng-enter-active {
+.object-table.ng-move.ng-move-active,
+.object-table.ng-enter.ng-enter-active,
+.endpoint-table.ng-move.ng-move-active,
+.endpoint-table.ng-enter.ng-enter-active {
   opacity: 1;
+  height: 120px;
 }
-.high.ng-leave {
-  transition: 0.25s;
+.object-table.ng-leave,
+.endpoint-table.ng-leave {
   opacity: 1;
+  overflow: hidden;
 }
-.high.ng-leave-active {
+.object-table.ng-leave.ng-leave-active,
+.endpoint-table.ng-leave.ng-leave-active {
   opacity: 0;
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
-.med.ng-enter {
-  transition: 0.25s;
-  opacity: 0;
-}
-.med.ng-enter-active {
-  opacity: 1;
-}
-.med.ng-leave {
-  transition: 0.25s;
-  opacity: 1;
-}
-.med.ng-leave-active {
-  opacity: 0;
-}
-.low.ng-enter {
-  transition: 0.25s;
-  opacity: 0;
-}
-.low.ng-enter-active {
-  opacity: 1;
-}
-.low.ng-leave {
-  transition: 0.25s;
-  opacity: 1;
-}
-.low.ng-leave-active {
-  opacity: 0;
-}
-/*# sourceMappingURL=data:application/json,%7B%22version%22%3A3%2C%22sources%22%3A%5B%22%2FUsers%2Falexabraham%2FDevelopment%2FScaffold%2Fapp%2Fsrc%2Fless%2Fscaffold.less%22%5D%2C%22names%22%3A%5B%5D%2C%22mappings%22%3A%22%3B%3BAAGA%3BEACC%2CaAAY%2CkBAAZ%3BEACA%2CUAAA%3BEACA%2CWAAA%3BEACA%2CcAAA%3B%3BAAGD%2CIAAK%3BAACD%3BAACA%3BAACA%3BEACD%2CgBAAA%3BEACA%2CcAAA%3BEACA%2CaAAY%2CuBAAuB%2CwBAAwB%2C8CAA3D%3BEACA%2CgBAAA%3BEACA%2CcAAA%3B%3B%3BAAKH%2CGAAG%2CKAAM%3BEAER%2CuBAAA%3BEACA%2CmCAAA%3BEACA%2CeAAA%3BEACA%2CWAAA%3BEACA%2CcAAA%3B%3BAAND%2CGAAG%2CKAAM%2CQAQR%2CQAAQ%2CKAAK%3BEACZ%2CyBAAA%3BEACA%2CmBAAA%3BEACA%2CYAAA%3BEACA%2CkBAAA%3BEACA%2CkBAAA%3B%3BAAKF%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEAMC%2CuBAAA%3BEACA%2CmCAAA%3BEACA%2CcAAA%3BEACA%2CWAAA%3BEACA%2CyBAAA%3BEACA%2CmBAAA%3BEACA%2CYAAA%3BEACA%2CkBAAA%3B%3BAAbD%2CSAEC%2CoBAAoB%3BEACnB%2CqBAAA%3B%3B%3BAAgBF%2CKAAK%3BEAEJ%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CKAAK%3BEAEJ%2CUAAA%3B%3BAAGD%2CKAAK%3BEAEJ%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CKAAK%3BEAEJ%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CiBAAA%3BEACA%2CUAAA%3B%3BAAGD%2CIAAI%3BEAEH%2CUAAA%22%7D */
+/*# sourceMappingURL=data:application/json,%7B%22version%22%3A3%2C%22sources%22%3A%5B%22%2FUsers%2Falexabraham%2FDevelopment%2FScaffold%2Fapp%2Fsrc%2Fless%2Fscaffold.less%22%5D%2C%22names%22%3A%5B%5D%2C%22mappings%22%3A%22%3B%3B%3BAAIA%3BEACC%2CaAAY%2CkBAAZ%3BEACA%2CUAAA%3BEACA%2CWAAA%3BEACA%2CcAAA%3B%3BAAGD%2CIAAK%3BAACD%3BAACA%3BAACA%3BEACD%2CgBAAA%3BEACA%2CcAAA%3BEACA%2CaAAY%2CuBAAuB%2CwBAAwB%2C8CAA3D%3BEACA%2CgBAAA%3BEACA%2CcAAA%3B%3B%3BAAKH%2CGAAG%2CQAAS%3BAACZ%2CGAAG%2CUAAW%3BEAEb%2CuBAAA%3BEACA%2CmCAAA%3BEACA%2CeAAA%3BEACA%2CWAAA%3BEACA%2CcAAA%3B%3BAAPD%2CGAAG%2CQAAS%2CQASX%2CQAAQ%2CKAAK%3BAARd%2CGAAG%2CUAAW%2CQAQb%2CQAAQ%2CKAAK%3BEACZ%2CyBAAA%3BEACA%2CmBAAA%3BEACA%2CYAAA%3BEACA%2CkBAAA%3BEACA%2CkBAAA%3B%3BAAdF%2CGAAG%2CQAAS%2CQAiBX%2CQAAQ%2CKAAK%3BAAhBd%2CGAAG%2CUAAW%2CQAgBb%2CQAAQ%2CKAAK%3BEACZ%2CiBAAA%3B%3BAAKF%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEACC%2CyBAAA%3BEACA%2CkBAAA%3BEACA%2CcAAA%3B%3BAAGD%3BEAMC%2CuBAAA%3BEACA%2CmCAAA%3BEACA%2CcAAA%3BEACA%2CWAAA%3BEACA%2CyBAAA%3BEACA%2CmBAAA%3BEACA%2CYAAA%3BEACA%2CkBAAA%3B%3BAAbD%2CSAEC%2CoBAAoB%3BEACnB%2CqBAAA%3B%3B%3BAAgBF%2CaAAa%3BAACb%2CaAAa%3BAACb%2CaAAa%3BAACb%2CeAAe%3BAACf%2CeAAe%3BAACf%2CeAAe%3BEACb%2CmCAAA%3BEACA%2CgCAAA%3BEACA%2C8BAAA%3BEACA%2C2BAAA%3B%3BAAGF%2CaAAa%3BAACb%2CaAAa%3BAACb%2CeAAe%3BAACf%2CeAAe%3BEACb%2CUAAA%3BEACA%2CSAAA%3BEACA%2CgBAAA%3B%3BAAGF%2CaAAa%2CQAAQ%3BAACrB%2CaAAa%2CSAAS%3BAACtB%2CeAAe%2CQAAQ%3BAACvB%2CeAAe%2CSAAS%3BEACtB%2CUAAA%3BEACA%2CaAAA%3B%3BAAGF%2CaAAa%3BAACb%2CeAAe%3BEACb%2CUAAA%3BEACA%2CgBAAA%3B%3BAAGF%2CaAAa%2CSAAS%3BAACtB%2CeAAe%2CSAAS%3BEACtB%2CUAAA%3BEACA%2CSAAA%3BEACA%2CcAAA%3BEACA%2CiBAAA%22%7D */

@@ -41,6 +41,15 @@ module.exports = function($stateProvider, $urlRouterProvider, $routeProvider, $l
             }
         },
 
+    }).state("Endpoints", {
+        url: "/scaffold/endpoints",
+        views: {
+            layout: {
+                templateUrl: "/release/html/layouts/scaffold/endpoints.html",
+                controller: "EndpointCtrl"
+            }
+        },
+
     });
 
 

@@ -96,7 +96,7 @@ module.exports = function($resource, $q, $rootScope) {
     var changeJSON = function(newJSON) {
         console.log("MainService.changeJSON", newJSON);
         var object = this;
-        Objects.changeJSON({
+        Objects.edit({
             id: object.id,
             json: newJSON
         }, function() {
@@ -122,7 +122,7 @@ module.exports = function($resource, $q, $rootScope) {
         var object = this;
         if (confirm("Do you really want to remove this object?")) {
             Objects.remove({
-                taskId: object.id,
+                id: object.id,
             }, function() {
                 console.log(object.name + " removed");
                 $rootScope.$emit('afterModification');
