@@ -21,16 +21,25 @@ module.exports = function($scope, ObjectService, $rootScope, $cookies) {
         refreshList();
     });
 
-    $scope.create = function() {
+    $scope.action = function() {
 
-        var newObject = $scope.addObject;
-        console.log(newObject['name']);
+        var objectJSON = $scope.objectJSON;
+        var id = $scope.idDropdown;
 
-        ObjectService.create(newObject).then(function() {
-            refreshList()
-        });
+        if (id) {
+            ObjectService.edit(id, objectJSON).then(function() {
+                refreshList()
+                $scope.objectJSON = "";
+                $scope.idDropdown = "";
+            });
+        } else {
+            ObjectService.create(objectJSON).then(function() {
+                refreshList()
+                $scope.objectJSON = "";
+                $scope.idDropdown = "";
+            });
+        }
 
-        $scope.addObject = "";
     };
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT

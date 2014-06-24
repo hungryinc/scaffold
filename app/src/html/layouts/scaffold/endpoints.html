@@ -1,17 +1,27 @@
 <div class="endpoints">
 
-	<form style="margin-left: 300px; margin-top: 10px;" ng-submit="create()">
-		<textarea rows="10" cols="50" ng-model="addObject" placeholder="Create New Endpoint (INPUT JSON)" id="addEndpoint"></textarea>
-		<button type="submit" style="margin-left: 10px;">Submit</button>		
-	</form>	<hr />
+	<form class="jsonForm" ng-submit="action()">
+		<textarea ng-model="endpointJSON" placeholder="Create or Change Endpoint (INPUT JSON)"></textarea>
+		
+		<span class="buttons">
+		<select ng-model="idDropdown">
+			<option value="">NEW ENDPOINT</option>
+			<option ng-repeat="endpoint in endpoints" value="{{endpoint.id}}">{{ endpoint.id }}</option>
+		</select>	
+
+		<button type="submit">Submit</button>
+		</span>
+	</form>	
+	<hr />
 
 	<span style="margin: 350px;">Filter: <input type="text" ng-model="searchText" style="margin: 10px;"/></span>
 	<br />
 	<br />
 
-	<table border = "1" style="text-align: center;" ng-table="tableParams">
+   
+	<table border = "1" style="text-align: center;">
 
-		<!-- <tr style="font-weight: bold;">
+		<tr style="font-weight: bold;">
 			<th>ENDPOINT ID</th>
 			<th>PROJECT ID</th>
 			<th>NAME</th>
@@ -21,14 +31,14 @@
 			<th>REQUEST HEADERS</th>	
 			<th>RESPONSE HEADERS</th>	
 
-		</tr> -->
+		</tr>
 		<tr ng-repeat="endpoint in endpoints | filter:searchText" class="endpoint-table">
-			<td data-title="'Endpoint ID'" sortable="'endpoint_id'"> {{ endpoint.id }} </td>
-			<td data-title="'Project ID'" sortable="'project_id'"> {{ endpoint.project_id }} </td>
-			<td data-title="'Name'" sortable="'name'"> {{ endpoint.name }} </td>
-			<td data-title="'URI'" sortable="'uri'"> {{ endpoint.uri }} </td>
-			<td data-title="'Method/Response Code'" sortable="'mrc'"> {{ endpoint.method }}/{{ endpoint.response_code }} </td>
-			<td style="text-align: left;"> 
+			<td> {{ endpoint.id }} </td>
+			<td> {{ endpoint.project_id }} </td>
+			<td> {{ endpoint.name }} </td>
+			<td> {{ endpoint.uri }} </td>
+			<td> {{ endpoint.method }}/{{ endpoint.response_code }} </td>
+			<td style="text-align: left;">
 				<pre pretty-json="endpoint.json" />
 			</td>
 			<td>

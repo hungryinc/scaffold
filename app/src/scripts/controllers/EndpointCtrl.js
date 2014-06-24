@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, EndpointService, $rootScope, $cookies, ngTableParams) {
+module.exports = function($scope, EndpointService, $rootScope, $cookies) {
 
     console.log("EndpointCtrl Loaded");
 
@@ -8,24 +8,6 @@ module.exports = function($scope, EndpointService, $rootScope, $cookies, ngTable
         console.log('EndpointCtrl.refreshList');
         EndpointService.getAllEndpoints().then(function(endpoints) {
             $scope.endpoints = endpoints;
-
-            $scope.tableParams = new ngTableParams({
-                page: 1, // show first page
-                count: 10, // count per page
-                sorting: {
-                    endpoint_id: 'asc' // initial sorting
-                }
-            }, {
-                total: $scope.endpoints.length, // length of $scope.endpoints
-                getData: function($defer, params) {
-                    // use build-in angular filter
-                    var orderedData = params.sorting() ?
-                        $filter('orderBy')($scope.endpoints, params.orderBy()) :
-                        $scope.endpoints;
-
-                    $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-                }
-            });
         });
 
     };
@@ -34,21 +16,32 @@ module.exports = function($scope, EndpointService, $rootScope, $cookies, ngTable
 
 
 
+
+
     $rootScope.$on('afterModification', function() {
         console.log("afterModification Broadcast Received");
         refreshList();
     });
 
-    $scope.create = function() {
+    $scope.action = function() {
 
-        var newEndpoint = $scope.addEndpoint;
-        console.log(newEndpoint['name']);
+        var endpointJSON = $scope.endpointJSON;
+        var id = $scope.idDropdown;
 
-        EndpointService.create(newEndpoint).then(function() {
-            refreshList()
-        });
+        if (id) {
+            EndpointService.edit(id, endpointJSON).then(function() {
+                refreshList()
+                $scope.endpointJSON = "";
+                $scope.idDropdown = "";
+            });
+        } else {
+            EndpointService.create(endpointJSON).then(function() {
+                refreshList()
+                $scope.endpointJSON = "";
+                $scope.idDropdown = "";
+            });
+        }
 
-        $scope.addEndpoint = "";
     };
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT

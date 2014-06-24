@@ -44,10 +44,7 @@ module.exports = function($resource, $q, $rootScope) {
     });
 
     var format = function(object) {
-        // object.rename = rename;
-        // object.remove = remove;
-        // object.changeDescription = changeDescription;
-        // object.changeJSON = changeJSON;
+        object.remove = remove;
 
         return object;
     }
@@ -70,47 +67,31 @@ module.exports = function($resource, $q, $rootScope) {
     }
 
 
-    var rename = function() {
-        console.log("MainService.rename");
-        var object = this;
-        var newname = prompt("What would you like to rename the object to?");
-        Tasks.rename({
-            id: object.id,
-            name: newname
-        }, function() {
-            $rootScope.$emit('afterModification');
-        });
-    };
+    this.edit = function(id, data) {
+        console.log("ObjectService.edit", data);
 
-    var changeDescription = function(newDescription) {
-        console.log("MainService.changeDescription", newDescription);
-        var object = this;
-        Objects.changeDescription({
-            id: object.id,
-            description: newDescription
-        }, function() {
-            $rootScope.$emit('afterModification');
-        });
-    }
+        var deferred = $q.defer();
 
-    var changeJSON = function(newJSON) {
-        console.log("MainService.changeJSON", newJSON);
-        var object = this;
         Objects.edit({
-            id: object.id,
-            json: newJSON
-        }, function() {
-            $rootScope.$emit('afterModification');
+            objectId: id
+        }, data, function(response) {
+            deferred.resolve(response.data);
+        }, function(error) {
+            alert("ERROR: " + error.data.message);
+            deferred.reject(error);
         });
+        return deferred.promise;
     }
+
 
     this.create = function(data) {
-        console.log("MainService.create");
+        console.log("ObjectService.create");
         var deferred = $q.defer();
 
         Objects.create(data, function(response) {
             deferred.resolve(response.data);
         }, function(error) {
+            alert("ERROR: " + error.data.message);
             deferred.reject(error);
         });
 
@@ -118,15 +99,25 @@ module.exports = function($resource, $q, $rootScope) {
     };
 
     var remove = function() {
-        console.log("MainService.remove");
+        console.log("ObjectService.remove");
         var object = this;
-        if (confirm("Do you really want to remove this object?")) {
+        if (confirm("Do you really want to remove object number " + object.id + "?")) {
             Objects.remove({
-                id: object.id,
-            }, function() {
+                objectId: object.id
+            }, function(response) {
+
                 console.log(object.name + " removed");
+
+                if (response.data.warning) {
+                    alert(response.data.warning);
+                } else {
+                    console.log("No endpoints were referencing the object")
+                }
+
                 $rootScope.$emit('afterModification');
+
             });
+
         } else {
             console.log("Deletion Cancelled");
         }

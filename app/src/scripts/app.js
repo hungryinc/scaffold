@@ -7,10 +7,9 @@ require("../../vendor/angular-animate/angular-animate");
 require("../../vendor/angular-sanitize/angular-sanitize");
 require("../../vendor/angular-ui-router/release/angular-ui-router");
 require("../../vendor/ngQuickDate/dist/ng-quick-date");
-require("./modules/cookies.js");
+require("./modules/cookies");
 require("../../vendor/ng-prettyjson/dist/ng-prettyjson.min");
 require("../../vendor/behave/behave");
-require("../../vendor/ng-table/ng-table");
 
 console.log("app.js Loaded");
 
@@ -21,7 +20,7 @@ var dateLocalizer = angular.module('dateLocalizeFilter', []).filter('dateLocaliz
     }
 });
 
-var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'ngTable']);
+var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson']);
 
 scaffold.config(require("./routes/MainRoutes"));
 

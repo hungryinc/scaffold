@@ -35,8 +35,8 @@ class EndpointController extends BaseController
 
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error(json_encode($error));
-
+			return $this->error($error);
+			
 		}
 		
 		return Response::json($endpoint);
@@ -56,8 +56,8 @@ class EndpointController extends BaseController
 
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error(json_encode($error));
-
+			return $this->error($error);
+			
 		}	
 
 		return Response::json($endpoint);	
@@ -75,8 +75,8 @@ class EndpointController extends BaseController
 
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error(json_encode($error));
-
+			return $this->error($error);
+			
 		}
 
 		return Response::json($endpoint);

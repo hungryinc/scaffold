@@ -9,7 +9,7 @@ class BaseController extends Controller {
 	 */
 	protected function error($error)
 	{
-		die($error);
+		return Response::json($error, 400);
 	}
 
 }

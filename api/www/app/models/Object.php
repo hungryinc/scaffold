@@ -37,7 +37,7 @@ class Object extends Eloquent implements ObjectRepository
 
 			if (isset($jsonobject['json'])) {
 
-				if (is_array($jsonobject['json']) AND count($jsonobject['json'])) {
+				if (is_array($jsonobject['json'])) {
 					$newObject->json = json_encode($jsonobject['json']);
 				} else {
 					throw new Exception("'JSON' field is not valid");
@@ -94,7 +94,7 @@ class Object extends Eloquent implements ObjectRepository
 
 			if (isset($jsonobject['json'])) {
 
-				if (is_array($jsonobject['json']) AND count($jsonobject['json'])) {
+				if (is_array($jsonobject['json'])) {
 					$object->json = json_encode($jsonobject['json']);
 				} else {
 					throw new Exception("the field 'JSON' is not valid");
@@ -102,7 +102,7 @@ class Object extends Eloquent implements ObjectRepository
 			}
 
 			if (isset($jsonobject['project_id']) && $project_id = $jsonobject['project_id']) {
-				$newObject->project_id = $project_id;
+				$object->project_id = $project_id;
 
 				if (!Project::find($project_id)) {
 					throw new Exception("That project ID does not exist in the database"); die();
@@ -147,7 +147,7 @@ class Object extends Eloquent implements ObjectRepository
 				if (count($array)) {
 
 					if (count($array) == 1) {
-						$warning = "The object was deleted and is no longer being referenced by the following endpoint: " . $array[0];
+						$warning = "The object was deleted and is no longer being referenced by endpoint: " . $array[0];
 					} else {
 						$warning = "The object was deleted and is no longer being referenced by the following endpoints: ";
 

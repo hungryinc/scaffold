@@ -64,15 +64,20 @@ module.exports = function($resource, $q, $rootScope) {
         return deferred.promise;
     }
 
-    var changeJSON = function(newJSON) {
-        console.log("EndpointService.changeJSON", newJSON);
-        var endpoint = this;
-        Endpoints.changeJSON({
-            id: endpoint.id,
-            json: newJSON
-        }, function() {
-            $rootScope.$emit('afterModification');
+    this.edit = function(id, data) {
+        console.log("EndpointService.edit", data);
+
+        var deferred = $q.defer();
+
+        Endpoints.edit({
+            endpointId: id
+        }, data, function(response) {
+            deferred.resolve(response.data);
+        }, function(error) {
+            alert("ERROR: " + error.data.message);
+            deferred.reject(error);
         });
+        return deferred.promise;
     }
 
     this.create = function(data) {
@@ -82,9 +87,9 @@ module.exports = function($resource, $q, $rootScope) {
         Endpoints.create(data, function(response) {
             deferred.resolve(response.data);
         }, function(error) {
+            alert("ERROR: " + error.data.message);
             deferred.reject(error);
         });
-
         return deferred.promise;
     };
 

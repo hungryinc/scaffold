@@ -1,9 +1,19 @@
 <div class="objects">
 
-	<form style="margin-left: 300px; margin-top: 10px;" ng-submit="create()">
-		<textarea rows="10" cols="50" ng-model="addObject" placeholder="Create New Object (INPUT JSON)" id="addObject"></textarea>
-		<button type="submit" style="margin-left: 10px;">Submit</button>		
-	</form>	<hr />
+	<form class="jsonForm" ng-submit="action()">
+		<textarea ng-model="objectJSON" placeholder="Create or Change Object (INPUT JSON)"></textarea>
+		
+		<span class="buttons">
+		<select ng-model="idDropdown">
+			<option value="">NEW OBJECT</option>
+			<option ng-repeat="object in objects" value="{{object.id}}">{{ object.id }}</option>
+		</select>	
+
+		<button type="submit">Submit</button>
+		</span>
+	</form>
+
+	<hr />
 
 	<span style="margin: 350px;">Filter: <input type="text" ng-model="searchText" style="margin: 10px;"/></span>
 	<br />
@@ -18,6 +28,7 @@
 			<th>DESCRIPTION</th>
 			<th>Created</th>
 			<th>JSON</th>	
+			<th>ACTION</th>
 
 		</tr>
 		<tr ng-repeat="object in objects | filter:searchText" class="object-table">
@@ -28,14 +39,9 @@
 			<td> {{ object.updated_at | dateLocalize | date:'MMM d @ hh:mma'}} </td>
 			<td style="text-align: left;"> 
 				<pre pretty-json="object.json" />
-					<!--
-					<table>
-						<tr ng-repeat="(key, value) in object.json">
-							<td>{{ key }}: </td>
-							<td>{{ value  }}</td>
-						</tr>
-					</table>
-				-->
+			</td>
+			<td>
+				<button type="button" ng-click='object.remove()'>Remove</button>
 			</td>
 		</tr>
 	</table>

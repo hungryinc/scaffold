@@ -51,7 +51,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 				}
 
 			} else {
-				throw new Exception('"project_id" field is missing'); die();
+				throw new Exception("'project_id' field is missing"); die();
 			}
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {

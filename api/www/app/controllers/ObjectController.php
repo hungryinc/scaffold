@@ -34,8 +34,8 @@ class ObjectController extends BaseController
 
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error(json_encode($error));
-			
+			return $this->error($error);
+						
 		}
 		
 		return Response::json($object);	
@@ -56,8 +56,8 @@ class ObjectController extends BaseController
 
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error(json_encode($error));
-
+			return $this->error($error);
+			
 		}	
 
 		return Response::json($object);
@@ -76,14 +76,14 @@ class ObjectController extends BaseController
 			$message = $e->getMessage();
 			$endpoints = $e->getEndpoints();
 			$error = array('message'=>$message, 'endpoints'=>$endpoints);
-			return $this->error(json_encode($error));
-
+			return $this->error($error);
+			
 		} catch (Exception $e) {
 
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
-			return $this->error($e);
-
+			return $this->error($error);
+			
 		}
 
 		return Response::json($object);
