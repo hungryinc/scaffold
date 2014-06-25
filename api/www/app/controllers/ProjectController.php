@@ -20,6 +20,21 @@ class ProjectController extends BaseController
 		return Response::json($project);
 	}
 
+	public function displayEndpoint($projectName, $uri)
+	{
+
+		try {
+			$result = $this->project->displayEndpoint('/'.$uri);
+		} catch (Exception $e) {
+
+			$message = $e->getMessage();
+			$error = array('message'=>$message);
+			return $this->error($error);
+
+		}
+		return $result;
+	}
+
 
 	//POST Methods
 

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, ObjectService, $rootScope, $cookies) {
+module.exports = function($scope, ObjectService, $rootScope, $cookies, ngDialog) {
 
     console.log("ObjectCtrl Loaded");
 
@@ -40,6 +40,13 @@ module.exports = function($scope, ObjectService, $rootScope, $cookies) {
             });
         }
 
+    };
+
+    $scope.dialog = function(json) {
+        ngDialog.open({
+            template: '<pre pretty-json=' + json + ' />',
+            plain: true
+        });
     };
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT

@@ -11,6 +11,20 @@
 |
  */
 
+Route::group(array('domain' => '{projectName}.scaffold.dev'), function()
+{
+
+	Route::get('/', function($projectName)
+	{
+        echo "Project Name: " . $projectName;
+	});
+
+	Route::get('/{uri}', 'ProjectController@displayEndpoint');
+
+});
+
+
+
 Route::get('/objects', 'ObjectController@getAllObjects');
 
 Route::get('/objects/{id}', 'ObjectController@getObjectById');
@@ -44,3 +58,6 @@ Route::post('/projects', 'ProjectController@createProject');
 Route::put('/projects/{id}', 'ProjectController@editProject');
 
 Route::delete('/projects/{id}', 'ProjectController@removeProject');
+
+
+

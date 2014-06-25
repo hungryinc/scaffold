@@ -1,7 +1,7 @@
 @import url(//fonts.googleapis.com/css?family=Lato:700);
 @import url(ng-quick-date.css);
 @import url(ng-prettyjson.min.css);
-@import url(smart-table.css);
+@import url(ngDialog.css);
 body {
   font-family: 'Lato', sans-serif;
   width: 70%;

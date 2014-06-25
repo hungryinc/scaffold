@@ -10,6 +10,8 @@ require("../../vendor/ngQuickDate/dist/ng-quick-date");
 require("./modules/cookies");
 require("../../vendor/ng-prettyjson/dist/ng-prettyjson.min");
 require("../../vendor/behave/behave");
+require("../../vendor/ngDialog/js/ngDialog");
+
 
 console.log("app.js Loaded");
 
@@ -20,11 +22,11 @@ var dateLocalizer = angular.module('dateLocalizeFilter', []).filter('dateLocaliz
     }
 });
 
-var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson']);
+var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'ngDialog']);
 
 scaffold.config(require("./routes/MainRoutes"));
 
-scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$cookies", require("./controllers/ObjectCtrl")]);
+scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$cookies", "ngDialog", require("./controllers/ObjectCtrl")]);
 scaffold.controller('EndpointCtrl', ["$scope", "EndpointService", "$rootScope", "$cookies", require("./controllers/EndpointCtrl")]);
 
 scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);

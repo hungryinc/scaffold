@@ -27,6 +27,56 @@ class Project extends Eloquent implements ProjectRepository
 		}
 	}
 
+	public function displayEndpoint($uri)
+	{
+		$endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->get();
+
+		foreach ($endpoints as $endpoint) {
+			if ($endpoint['uri'] == $uri) {
+
+				$request_headers = getallheaders();
+
+				$endpoint_request_headers = $endpoint['request_headers'];
+				$missingHeaders = array();
+				
+				foreach ($endpoint_request_headers as $header) {
+					if (array_key_exists($header['key'], $request_headers)) {
+						if ($header['value'] != $request_headers[$header['key']]) {
+							$missingHeaders[] = array($header['key'] => $header['value']);
+						}
+					}
+				}
+
+				if (count($missingHeaders)) {
+					$response = array();
+					$response['message'] = "You are missing some endpoints";
+					$response['endpoints'] = $missingHeaders;
+					return $response;
+				}
+
+				$data = json_decode($endpoint['json']);
+				$code = $endpoint['response_code'];
+				
+				$response = Response::json($data, $code);
+
+				// $headers = $endpoint['response_headers'];
+
+
+				// foreach ($headers as $header) {
+				// 	$response->header($header['key'], $header['value']);
+				// }
+
+				return $response;
+				return "GOOD URI";
+			}
+		}
+
+		return "BAD URI";
+
+
+		//return $endpoints[0]['uri'];
+	}
+
 	public function createProject($jsonobject)
 	{
 		$newProject = new Project();
