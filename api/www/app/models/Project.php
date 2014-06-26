@@ -27,54 +27,85 @@ class Project extends Eloquent implements ProjectRepository
 		}
 	}
 
-	public function displayEndpoint($uri)
+	public function getProjectByName($name) {
+		$projects = $this->with('endpoints', 'objects')->get();
+
+		foreach ($projects as $project) {
+			if (Str::slug($name) == Str::slug($project->name)) {
+				return $project;
+			}
+		}
+
+		return null;
+	}
+
+	public function displayEndpoint($name, $uri)
 	{
-		$endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->get();
+		if ($project = $this->getProjectByName($name)) {
+			if ($endpoint = Endpoint::with('requestHeaders', 'responseHeaders')->where('uri', '=', $uri)->get()[0]) {
 
-		foreach ($endpoints as $endpoint) {
-			if ($endpoint['uri'] == $uri) {
-
+				//DEAL WITH REQUEST HEADERS
 				$request_headers = getallheaders();
 
 				$endpoint_request_headers = $endpoint['request_headers'];
+
 				$missingHeaders = array();
 				
 				foreach ($endpoint_request_headers as $header) {
+
 					if (array_key_exists($header['key'], $request_headers)) {
+
 						if ($header['value'] != $request_headers[$header['key']]) {
 							$missingHeaders[] = array($header['key'] => $header['value']);
 						}
+
+					} else {
+
+						$missingHeaders[] = array($header['key'] => $header['value']);
+
 					}
+
 				}
 
 				if (count($missingHeaders)) {
 					$response = array();
-					$response['message'] = "You are missing some endpoints";
-					$response['endpoints'] = $missingHeaders;
-					return $response;
+					$response['message'] = "You are missing some request headers";
+					$response['request headers'] = $missingHeaders;
+					throw new Exception(json_encode($response));
 				}
 
+
+				//DEAL WITH ENDPOINT JSON DATA AND ANY OBJECT JSON DATA
 				$data = json_decode($endpoint['json']);
+
+				foreach ($data as $key => $value) {
+
+					if ($object = $this->getObject($value)) {
+						$data->$key = json_decode($object->json);
+					}
+
+				}
+
+				//GET RESPONSE CODE FROM ENDPOINT
 				$code = $endpoint['response_code'];
 				
-				$response = Response::json($data, $code);
+				//ASSIGN HEADERS FROM ENDPOINT AND RETURN RESPONSE
+				$response_headers = array();
+				$endpoint_response_headers = $endpoint['response_headers'];
 
-				// $headers = $endpoint['response_headers'];
+				foreach ($endpoint_response_headers as $header) {
+					$response_headers[$header['key']] = $header['value'];
+				}
 
 
-				// foreach ($headers as $header) {
-				// 	$response->header($header['key'], $header['value']);
-				// }
+				return Response::json($data, $code, $response_headers);
+			} else {
+				throw new Exception("That URI does not exist for any of the endpoints in the project");
+			}	
 
-				return $response;
-				return "GOOD URI";
-			}
+		} else {
+			throw new Exception("The project name does not exist");
 		}
-
-		return "BAD URI";
-
-
-		//return $endpoints[0]['uri'];
 	}
 
 	public function createProject($jsonobject)
@@ -85,6 +116,11 @@ class Project extends Eloquent implements ProjectRepository
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$newProject->name = $name;
+
+				if ($id = $this->getProjectByName($name)->id) {
+					throw new Exception('That name is already being used by project id #' . $id); die();
+				}
+
 			} else {
 				throw new Exception('Name field is missing');
 			}
@@ -111,6 +147,11 @@ class Project extends Eloquent implements ProjectRepository
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$project->name = $name;
+
+				if ($id = $this->getProjectByName($name)->id) {
+					throw new Exception('That name is already being used by project id #' . $id); die();
+				}
+
 			}
 
 			if (isset($jsonobject['description']) && $description = $jsonobject['description']) {
@@ -159,14 +200,32 @@ class Project extends Eloquent implements ProjectRepository
 	{
 		return $this->hasMany('Object');
 	}
+	
+	public function getObject($str) {
+		if (preg_match('/<%(\d+)%>/is', $str, $matches)){
+			if (($object = Object::find($matches[1])) != null) {
+
+				return $object;
+
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
 
 	public function formatted()
 	{
 
 		$endpoints = $this->endpoints;
+
 		foreach ($endpoints as $endpoint) {
+			$endpoint = Endpoint::with('requestHeaders', 'responseHeaders')->find($endpoint->id);
 			$endpoint->json = json_decode($endpoint->json);
+			// echo $endpoint; die();
 		}
+
 		$this->endpoints = $endpoints;
 
 

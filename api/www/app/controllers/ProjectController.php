@@ -24,11 +24,17 @@ class ProjectController extends BaseController
 	{
 
 		try {
-			$result = $this->project->displayEndpoint('/'.$uri);
+			$result = $this->project->displayEndpoint($projectName, '/'.$uri);
 		} catch (Exception $e) {
 
 			$message = $e->getMessage();
-			$error = array('message'=>$message);
+			$error = json_decode($message);
+
+			if (!(json_last_error() == JSON_ERROR_NONE)) {
+				$message = $e->getMessage();
+				$error = array('message'=>$message);
+			}
+
 			return $this->error($error);
 
 		}
@@ -80,13 +86,6 @@ class ProjectController extends BaseController
 		try {
 
 			$project['data'] = $this->project->removeProject($id);
-
-		} catch (ObjectDeleteException $e) {
-			
-			$message = $e->getMessage();
-			$endpoints = $e->getEndpoints();
-			$error = array('message'=>$message, 'endpoints'=>$endpoints);
-			return $this->error($error);
 
 		} catch (Exception $e) {
 

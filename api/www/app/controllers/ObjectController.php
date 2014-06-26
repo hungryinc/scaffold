@@ -71,13 +71,6 @@ class ObjectController extends BaseController
 
 			$object['data'] = $this->object->removeObject($id);
 
-		} catch (ObjectDeleteException $e) {
-			
-			$message = $e->getMessage();
-			$endpoints = $e->getEndpoints();
-			$error = array('message'=>$message, 'endpoints'=>$endpoints);
-			return $this->error($error);
-			
 		} catch (Exception $e) {
 
 			$message = $e->getMessage();
