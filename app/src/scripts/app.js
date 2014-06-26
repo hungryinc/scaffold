@@ -30,10 +30,10 @@ scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$co
 scaffold.controller('EndpointCtrl', ["$scope", "EndpointService", "$rootScope", "$cookies", require("./controllers/EndpointCtrl")]);
 
 scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);
-scaffold.controller('MainCtrl', ["$scope", "MainService", "$rootScope", "$cookies", require("./controllers/MainServiceCtrl")]);
+scaffold.controller('DashboardCtrl', ["$scope", "DashboardService", "$rootScope", "$cookies", require("./controllers/DashboardCtrl")]);
 
 
-scaffold.service('MainService', ["$resource", "$q", "$rootScope", require("./services/MainService")]);
+scaffold.service('DashboardService', ["$resource", "$q", "$rootScope", require("./services/DashboardService")]);
 scaffold.service('ObjectService', ["$resource", "$q", "$rootScope", require("./services/ObjectService")]);
 scaffold.service('EndpointService', ["$resource", "$q", "$rootScope", require("./services/EndpointService")]);
 

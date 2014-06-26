@@ -32,17 +32,52 @@ class Project extends Eloquent implements ProjectRepository
 
 		foreach ($projects as $project) {
 			if (Str::slug($name) == Str::slug($project->name)) {
-				return $project;
+				return $project->formatted();
 			}
 		}
 
 		return null;
 	}
 
+	public function getAllEndpoints($name) {	
+		
+		if ($project = $this->getProjectByName($name)) {		
+			$endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->where('project_id', '=', $project['id'])->get();
+
+			foreach ($endpoints as $endpoint) {
+				$endpoint->json = json_decode($endpoint->json);
+			}
+
+			return $endpoints->toArray();	
+		} else {	
+			throw new Exception("The project name does not exist");	
+		}
+	
+	}
+
+	public function getAllObjects($name) {	
+		
+		if ($project = $this->getProjectByName($name)) {		
+			$objects = Object::where('project_id', '=', $project['id'])->get();
+
+			foreach ($objects as $object) {
+				$object->json = json_decode($object->json);
+			}
+
+			return $objects->toArray();	
+		} else {	
+			throw new Exception("The project name does not exist");	
+		}
+	
+	}
+
+
 	public function displayEndpoint($name, $uri)
 	{
 		if ($project = $this->getProjectByName($name)) {
-			if ($endpoint = Endpoint::with('requestHeaders', 'responseHeaders')->where('uri', '=', $uri)->get()[0]) {
+			if (count($endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->where('uri', '=', $uri)->get())) {
+
+				$endpoint = $endpoints[0];
 
 				//DEAL WITH REQUEST HEADERS
 				$request_headers = getallheaders();

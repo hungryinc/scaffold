@@ -6,21 +6,12 @@ module.exports = function($stateProvider, $urlRouterProvider, $routeProvider, $l
 
     $locationProvider.html5Mode(true).hashPrefix("!");
 
-    $stateProvider.state("Main", {
-        url: "/",
+    $stateProvider.state("Dashboard", {
+        url: "/scaffold/dashboard",
         views: {
             layout: {
-                templateUrl: "/release/html/layouts/main.html",
-                controller: "ObjectCtrl"
-            }
-        },
-
-    }).state("List", {
-        url: "/list",
-        views: {
-            layout: {
-                templateUrl: "/release/html/layouts/list.html",
-                controller: "ListCtrl"
+                templateUrl: "/release/html/layouts/scaffold/dashboard.html",
+                controller: "DashboardCtrl"
             }
         },
 
@@ -32,6 +23,7 @@ module.exports = function($stateProvider, $urlRouterProvider, $routeProvider, $l
                 controller: "MainCtrl"
             }
         },
+
     }).state("Objects", {
         url: "/scaffold/objects",
         views: {

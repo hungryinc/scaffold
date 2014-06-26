@@ -20,6 +20,24 @@ class ProjectController extends BaseController
 		return Response::json($project);
 	}
 
+	public function getProjectByName($projectName)
+	{
+		$project['data'] = $this->project->getProjectByName($projectName);
+		return Response::json($project);
+	}
+
+	public function getAllEndpoints($projectName)
+	{
+		$endpoints['data'] = $this->project->getAllEndpoints($projectName);
+		return Response::json($endpoints);
+	}
+
+	public function getAllObjects($projectName)
+	{
+		$objects['data'] = $this->project->getAllObjects($projectName);
+		return Response::json($objects);
+	}
+
 	public function displayEndpoint($projectName, $uri)
 	{
 
