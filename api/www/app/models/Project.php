@@ -3,11 +3,11 @@
 class Project extends Eloquent implements ProjectRepository 
 {
 
-	protected $hidden = array('pivot', 'created_at', 'updated_at');
+	protected $hidden = array('pivot');
 
-	public function getProjects() 
+	public function getAllProjects() 
 	{
-		$projects = $this->with('endpoints', 'objects')->get();
+		$projects = $this->get();
 
 		foreach ($projects as $project) {
 			$project = $project->formatted();
@@ -36,7 +36,7 @@ class Project extends Eloquent implements ProjectRepository
 			}
 		}
 
-		return null;
+		throw new Exception("Sorry, Project does not exist"); die();
 	}
 
 	public function getAllEndpoints($name) {	
@@ -111,12 +111,12 @@ class Project extends Eloquent implements ProjectRepository
 
 
 				//DEAL WITH ENDPOINT JSON DATA AND ANY OBJECT JSON DATA
-				$data = json_decode($endpoint['json']);
+				$data['data'] = json_decode($endpoint['json']);
 
-				foreach ($data as $key => $value) {
+				foreach ($data['data'] as $key => $value) {
 
 					if ($object = $this->getObject($value)) {
-						$data->$key = json_decode($object->json);
+						$data['data']->$key = json_decode($object->json);
 					}
 
 				}
@@ -152,9 +152,11 @@ class Project extends Eloquent implements ProjectRepository
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$newProject->name = $name;
 
-				if ($id = $this->getProjectByName($name)->id) {
-					throw new Exception('That name is already being used by project id #' . $id); die();
-				}
+				try {
+					if ($id = $this->getProjectByName($name)->id) {
+						throw new Exception('That name is already being used by project id #' . $id); die();
+					}
+				} catch (Exception $e) {}
 
 			} else {
 				throw new Exception('Name field is missing');
@@ -168,7 +170,7 @@ class Project extends Eloquent implements ProjectRepository
 
 			$newProject->save();
 
-			return $newProject;
+			return $newProject->formatted();
 		} else {
 			throw new Exception('Invalid JSON');
 		}
@@ -256,11 +258,8 @@ class Project extends Eloquent implements ProjectRepository
 		$endpoints = $this->endpoints;
 
 		foreach ($endpoints as $endpoint) {
-			$endpoint = Endpoint::with('requestHeaders', 'responseHeaders')->find($endpoint->id);
 			$endpoint->json = json_decode($endpoint->json);
-			// echo $endpoint; die();
 		}
-
 		$this->endpoints = $endpoints;
 
 

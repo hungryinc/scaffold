@@ -39,6 +39,7 @@ Route::group(array('domain' => 'api.scaffold.dev'), function()
 
 
 
+	Route::get('/projects', 'ProjectController@getAllProjects');
 
 	Route::get('/projects/{id}', 'ProjectController@getProjectByID');
 
@@ -50,7 +51,7 @@ Route::group(array('domain' => 'api.scaffold.dev'), function()
 
 });
 
-Route::group(array('domain' => '{projectName}.scaffold.dev'), function()
+Route::group(array('domain' => '{projectName}.api.scaffold.dev'), function()
 {
 
 	Route::get('/', 'ProjectController@getProjectByName');
@@ -61,6 +62,8 @@ Route::group(array('domain' => '{projectName}.scaffold.dev'), function()
 
 	Route::get('/{uri}', 'ProjectController@displayEndpoint');
 
+	
+	
 });
 
 

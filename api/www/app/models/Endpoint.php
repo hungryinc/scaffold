@@ -3,7 +3,7 @@
 class Endpoint extends Eloquent implements EndpointRepository 
 {
 
-	protected $hidden = array('pivot', 'created_at', 'updated_at');
+	protected $hidden = array('pivot');
 
 	//GET Methods
 

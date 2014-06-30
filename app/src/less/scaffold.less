@@ -1,13 +1,17 @@
 @import url(//fonts.googleapis.com/css?family=Lato:700);
 @import url(ng-quick-date.css);
 @import url(ng-prettyjson.min.css);
-@import url(ngDialog.css);
+@import url(ng-modal.css);
 
 body {
 	font-family:'Lato', sans-serif;
 	width: 70%;
 	color: #666;
 	display: block;
+}
+
+h2 {
+	text-align: center;
 }
 
 form > input, 
@@ -44,13 +48,16 @@ div.endpoints > .jsonForm
 
 /*TABLE*/
 div.objects > table,
-div.endpoints > table
+div.endpoints > table,
+div.dashboard > table
 {
 	font-family: sans-serif;
 	-webkit-font-smoothing: antialiased;
 	font-size: 115%;
 	width: auto;
 	overflow: auto;
+	margin-left: auto;
+	margin-right: auto;
 
 	> tbody > tr > th {
 		background-color: rgb(112, 196, 105);
@@ -66,22 +73,9 @@ div.endpoints > table
 
 }
 
-.high {
-	background-color: rgb(245, 71, 71);
-	padding: 20px 30px;
-	color: rgb(255, 255, 255);
-}
-
-.med {
-	background-color: rgb(196, 222, 29);
-	padding: 20px 30px;
-	color: rgb(0, 0, 0);
-}
-
-.low {
-	background-color: rgb(238, 238, 238);
-	padding: 20px 30px;
-	color: rgb(80, 80, 80);
+.filter {
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .calendar {
@@ -108,7 +102,10 @@ div.endpoints > table
 .object-table.ng-move, 
 .endpoint-table.ng-enter,
 .endpoint-table.ng-leave,
-.endpoint-table.ng-move {
+.endpoint-table.ng-move,
+.dashboard-table.ng-enter,
+.dashboard-table.ng-leave,
+.dashboard-table.ng-move {
   -webkit-transition: 0.5s linear all;
   -moz-transition: 0.5s linear all;
   -o-transition: 0.5s linear all;
@@ -118,7 +115,9 @@ div.endpoints > table
 .object-table.ng-enter,
 .object-table.ng-move,
 .endpoint-table.ng-enter,
-.endpoint-table.ng-move {
+.endpoint-table.ng-move,
+.dashboard-table.ng-enter,
+.dashboard-table.ng-move {
   opacity: 0;
   height: 0;
   overflow: hidden;
@@ -127,19 +126,23 @@ div.endpoints > table
 .object-table.ng-move.ng-move-active,
 .object-table.ng-enter.ng-enter-active,
 .endpoint-table.ng-move.ng-move-active,
-.endpoint-table.ng-enter.ng-enter-active {
+.endpoint-table.ng-enter.ng-enter-active,
+.dashboard-table.ng-move.ng-move-active,
+.dashboard-table.ng-enter.ng-enter-active {
   opacity: 1;
   height: 120px;
 }
 
 .object-table.ng-leave,
-.endpoint-table.ng-leave {
+.endpoint-table.ng-leave,
+.dashboard-table.ng-leave {
   opacity: 1;
   overflow: hidden;
 }
 
 .object-table.ng-leave.ng-leave-active,
-.endpoint-table.ng-leave.ng-leave-active {
+.endpoint-table.ng-leave.ng-leave-active,
+.dashboard-table.ng-leave.ng-leave-active {
   opacity: 0;
   height: 0;
   padding-top: 0;

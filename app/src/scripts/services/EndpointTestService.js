@@ -2,94 +2,60 @@
 
 module.exports = function($resource, $q, $rootScope) {
 
-    console.log("MainService Loaded");
+    console.log("EndpointTestService Loaded");
 
-    var URL = 'http://api.scaffold.dev/:dataType';
+    var convertToSlug = function(str) {
+        str = str.replace(/^\s+|\s+$/g, ''); // trim
+        str = str.toLowerCase();
 
-    var formatTime = function(time) {
-        var split = time.split(/[- :]/);
-        var projectTime = new Date(split[0], split[1] - 1, split[2], split[3], split[4], split[5]);
-
-        var currentTime = new Date();
-        var timeSince = Math.round((currentTime.getTime() - projectTime.getTime()) / (1000 * 60 * 60 * 24));
-
-        if (timeSince == 0) {
-            return "Today";
-        } else if (timeSince == 1) {
-            return "1 Day Ago";
-        } else {
-            return timeSince + " Days Ago";
-        }
-    }
-
-    var Objects = $resource(URL, {}, {
-
-        getProjects: {
-            method: "GET",
-            params: {
-                dataType: 'projects'
-            }
-        },
-
-        getEndpoints: {
-            method: "GET",
-            params: {
-                dataType: 'endpoints'
-            }
-        },
-
-        getObjects: {
-            method: "GET",
-            params: {
-                dataType: 'objects'
-            }
+        // remove accents, swap ñ for n, etc
+        var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
+        var to = "aaaaaeeeeeiiiiooooouuuunc------";
+        for (var i = 0, l = from.length; i < l; i++) {
+            str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
         }
 
-    });
+        str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+        .replace(/\s+/g, '-') // collapse whitespace and replace by -
+        .replace(/-+/g, '-'); // collapse dashes
 
-    var format = function(project) {
-        project.rename = rename;
-        project.remove = remove;
-        project.changeDescription = changeDescription;
-        project.changeJSON = changeJSON;
+        return str;
+    };
 
-        project.created_at = formatTime(project.created_at);
-        project.updated_at = formatTime(project.updated_at);
+    var generateHeaders = function(request_headers) {
+        var result = {};
+        for (var i = 0; i < request_headers.length; i++) {
+            var header = request_headers[i];
+            result[header['key']] = header['value'];
+        };
+        return result;
 
-        return project;
     }
 
-    this.getProjects = function() {
-        console.log("DashboardService.getProjects");
 
-        var deferred = $q.defer();
 
-        Objects.getProjects({}, function(response) {
-            for (var i = 0; i < response.data.length; i++) {
-                response.data[i] = format(response.data[i]);
-            };
+    this.testEndpoint = function(name, uri, request_headers) {
+        console.log("EndpointTestService.testEndpoint");
 
-            deferred.resolve(response.data);
-        }, function(error) {
-            deferred.reject(error);
+        var URL = 'http://' + convertToSlug(name) + '.api.scaffold.dev' + uri;
+        var EndpointTest = $resource(URL, {}, {
+
+            run: {
+                method: "GET",
+                headers: generateHeaders(request_headers)
+            }
+
         });
 
-        return deferred.promise;
-    }
-
-    this.getEndpoints = function() {
-        console.log("DashboardService.getEndpoints");
-
         var deferred = $q.defer();
 
-        Objects.getEndpoints({}, function(response) {
-            for (var i = 0; i < response.data.length; i++) {
-                response.data[i] = format(response.data[i]);
-            };
+        EndpointTest.run({}, function(response) {
+            console.log('Test Successful');
 
             deferred.resolve(response.data);
 
         }, function(error) {
+            console.log(error);
             deferred.reject(error);
         });
 
@@ -102,9 +68,6 @@ module.exports = function($resource, $q, $rootScope) {
         var deferred = $q.defer();
 
         Objects.getObjects({}, function(response) {
-            for (var i = 0; i < response.data.length; i++) {
-                response.data[i] = format(response.data[i]);
-            };
 
             deferred.resolve(response.data);
         }, function(error) {

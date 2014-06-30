@@ -10,7 +10,16 @@ class ProjectController extends BaseController
 	//GET Methods
 	public function getAllProjects()
 	{
-		$projects['data'] = $this->project->getProjects();
+		try {
+			$projects['data'] = $this->project->getAllProjects();
+		} catch (Exception $e) {
+			
+			$message = $e->getMessage();
+			$error = array('message'=>$message);
+			return $this->error($error);
+
+		}
+
 		return Response::json($projects);
 	}
 
@@ -22,7 +31,16 @@ class ProjectController extends BaseController
 
 	public function getProjectByName($projectName)
 	{
-		$project['data'] = $this->project->getProjectByName($projectName);
+		try {
+			$project['data'] = $this->project->getProjectByName($projectName);
+		} catch (Exception $e) {
+			
+			$message = $e->getMessage();
+			$error = array('message'=>$message);
+			return $this->error($error);
+
+		}
+
 		return Response::json($project);
 	}
 
@@ -44,6 +62,8 @@ class ProjectController extends BaseController
 		try {
 			$result = $this->project->displayEndpoint($projectName, '/'.$uri);
 		} catch (Exception $e) {
+
+			throw $e; die();
 
 			$message = $e->getMessage();
 			$error = json_decode($message);
@@ -69,7 +89,7 @@ class ProjectController extends BaseController
 		try {
 			$project['data'] = $this->project->createProject($json);
 		} catch (Exception $e) {
-			
+
 			$message = $e->getMessage();
 			$error = array('message'=>$message);
 			return $this->error($error);

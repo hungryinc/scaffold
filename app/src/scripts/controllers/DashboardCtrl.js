@@ -1,12 +1,20 @@
 'use strict';
 
-module.exports = function($scope, DashboardService, $rootScope, $cookies, ngDialog) {
+module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService) {
 
     console.log("DashboardCtrl Loaded");
 
     var refreshList = function() {
         console.log('DashboardCtrl.refreshList');
-        ObjectService.getAllObjects().then(function(objects) {
+        DashboardService.getProjects().then(function(projects) {
+            $scope.projects = projects;
+        });
+
+        DashboardService.getEndpoints().then(function(endpoints) {
+            $scope.endpoints = endpoints;
+        });
+
+        DashboardService.getObjects().then(function(objects) {
             $scope.objects = objects;
         });
 
@@ -21,32 +29,29 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, ngDial
         refreshList();
     });
 
-    $scope.action = function() {
+    $scope.testEndpoint = function(endpoint) {
+        console.log('DashboardCtrl.testEndpoint');
+        for (var i = 0; i < $scope.projects.length; i++) {
+            var project = $scope.projects[i];
+            for (var j = 0; j < project.endpoints.length; j++) {
+                var value = project.endpoints[j]
+                if (endpoint.id == value.id) {
+                    console.log(value.id);
+                    var name = project.name;
+                    var uri = endpoint.uri;
+                    var request_headers = endpoint.request_headers;
 
-        var objectJSON = $scope.objectJSON;
-        var id = $scope.idDropdown;
+                    EndpointTestService.testEndpoint(name, uri, request_headers).then(function(result) {
+                        console.log(result);
 
-        if (id) {
-            ObjectService.edit(id, objectJSON).then(function() {
-                refreshList()
-                $scope.objectJSON = "";
-                $scope.idDropdown = "";
-            });
-        } else {
-            ObjectService.create(objectJSON).then(function() {
-                refreshList()
-                $scope.objectJSON = "";
-                $scope.idDropdown = "";
-            });
-        }
-
+                    });
+                }
+            };
+        };
     };
 
-    $scope.dialog = function(json) {
-        ngDialog.open({
-            template: '<pre pretty-json=' + json + ' />',
-            plain: true
-        });
+    $scope.editEndpoint = function(endpoint) {
+
     };
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT
