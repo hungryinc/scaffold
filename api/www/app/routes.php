@@ -60,8 +60,7 @@ Route::group(array('domain' => '{projectName}.api.scaffold.dev'), function()
 
 	Route::get('/objects', 'ProjectController@getAllObjects');
 
-	Route::get('/{uri}', 'ProjectController@displayEndpoint');
-
+	Route::get('/{uri}', 'ProjectController@displayEndpoint')->where('uri', '.*');
 	
 	
 });
