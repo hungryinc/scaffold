@@ -60,6 +60,11 @@ class Object extends Eloquent implements ObjectRepository
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$newObject->name = $name;
+
+				if ($this->checkName($name)) {
+					throw new Exception('Sorry, that name is being used by another object!'); die();
+				}
+
 			} else {
 				throw new Exception('Name field is missing');
 			}
@@ -86,6 +91,11 @@ class Object extends Eloquent implements ObjectRepository
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$object->name = $name;
+
+				if ($this->checkName($name)) {
+					throw new Exception('Sorry, that name is being used by another object!'); die();
+				}
+				
 			}
 
 			if (isset($jsonobject['description']) && $description = $jsonobject['description']) {
@@ -167,6 +177,19 @@ class Object extends Eloquent implements ObjectRepository
 		}
 
 		return $object->formatted();
+	}
+
+	//DUPLICATE CHECK METHOD
+
+	public function checkName($name)
+	{
+		$endpoints = $this->getEndpoints();
+		foreach ($endpoints as $endpoint) {
+			if ($endpoint->name == $name) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function formatted()

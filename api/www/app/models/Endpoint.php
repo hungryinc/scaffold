@@ -56,12 +56,22 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$newEndpoint->name = $name;
+
+				if ($this->checkName($name)) {
+					throw new Exception('Sorry, that name is being used by another endpoint!'); die();
+				}
+
 			} else {
 				throw new Exception('Name field is missing'); die();
 			}
 
 			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
 				$newEndpoint->uri = $uri;
+
+				if ($this->checkURI($uri)) {
+					throw new Exception('Sorry, that URI is being used by another endpoint!'); die();
+				}
+
 			} else {
 				throw new Exception('URI field is missing'); die();
 			}
@@ -137,10 +147,18 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 			if (isset($jsonobject['name']) && $name = $jsonobject['name']) {
 				$endpoint->name = $name;
+
+				if ($this->checkName($name)) {
+					throw new Exception('Sorry, that name is being used by another endpoint!'); die();
+				}
 			}
 
 			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
 				$endpoint->uri = $uri;
+
+				if ($this->checkURI($uri)) {
+					throw new Exception('Sorry, that URI is being used by another endpoint!'); die();
+				}
 			}
 
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
@@ -278,6 +296,34 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 		}
 	}
+
+	//DUPLICATE CHECK METHODS
+
+	public function checkName($name)
+	{
+		$endpoints = $this->getEndpoints();
+		foreach ($endpoints as $endpoint) {
+			if ($endpoint->name == $name) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function checkURI($uri)
+	{
+		$endpoints = $this->getEndpoints();
+		foreach ($endpoints as $endpoint) {
+			if ($endpoint->uri == $uri) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+
+
 
 	public function formatted()
 	{
