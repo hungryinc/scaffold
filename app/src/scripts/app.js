@@ -9,7 +9,7 @@ require("../../vendor/angular-ui-router/release/angular-ui-router");
 require("../../vendor/ngQuickDate/dist/ng-quick-date");
 require("./modules/cookies");
 require("../../vendor/ng-prettyjson/dist/ng-prettyjson.min");
-require("../../vendor/ngModal/dist/ng-modal");
+require("../../vendor/angular-strap/dist/angular-strap.min");
 
 
 console.log("app.js Loaded");
@@ -21,7 +21,7 @@ var dateLocalizer = angular.module('dateLocalizeFilter', []).filter('dateLocaliz
     }
 });
 
-var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson']);
+var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'mgcrea.ngStrap']);
 
 scaffold.config(require("./routes/MainRoutes"));
 
@@ -29,14 +29,11 @@ scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$co
 scaffold.controller('EndpointCtrl', ["$scope", "EndpointService", "$rootScope", "$cookies", require("./controllers/EndpointCtrl")]);
 
 scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);
-scaffold.controller('DashboardCtrl', ["$scope", "DashboardService", "$rootScope", "$cookies", "EndpointTestService",
-    require("./controllers/DashboardCtrl")
-]);
-
+scaffold.controller('DashboardCtrl', ["$scope", "DashboardService", "$rootScope", "$cookies", "EndpointTestService", "$modal", require("./controllers/DashboardCtrl")]);
 
 scaffold.service('DashboardService', ["$resource", "$q", "$rootScope", require("./services/DashboardService")]);
 scaffold.service('ObjectService', ["$resource", "$q", "$rootScope", require("./services/ObjectService")]);
 scaffold.service('EndpointService', ["$resource", "$q", "$rootScope", require("./services/EndpointService")]);
-scaffold.service('EndpointTestService', ["$resource", "$q", "$rootScope", require("./services/EndpointTestService")]);
+scaffold.service('EndpointTestService', ["$resource", "$q", "$rootScope", "$http", require("./services/EndpointTestService")]);
 
 angular.bootstrap(document, ['Scaffold']);

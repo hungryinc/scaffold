@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService) {
+module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService, $modal) {
 
     console.log("DashboardCtrl Loaded");
 
@@ -22,6 +22,18 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
     refreshList();
 
+    var myModal = $modal({
+        title: 'Title',
+        content: 'Hello Modal<br />This is a multiline message!',
+        show: false
+    });
+    $scope.showModal = function() {
+        myModal.$promise.then(myModal.show);
+    };
+    $scope.hideModal = function() {
+        myModal.$promise.then(myModal.hide);
+    };
+
 
 
     $rootScope.$on('afterModification', function() {
@@ -38,11 +50,13 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                 if (endpoint.id == value.id) {
                     console.log(value.id);
                     var name = project.name;
+                    var method = endpoint.method;
                     var uri = endpoint.uri;
                     var request_headers = endpoint.request_headers;
 
-                    EndpointTestService.testEndpoint(name, uri, request_headers).then(function(result) {
-                        console.log(result);
+                    EndpointTestService.testEndpoint(name, method, uri, request_headers).then(function(response) {
+                        console.log(response);
+                        // $scope.showModal();
 
                     });
                 }

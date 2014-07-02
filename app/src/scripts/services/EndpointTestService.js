@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($resource, $q, $rootScope) {
+module.exports = function($resource, $q, $rootScope, $http) {
 
     console.log("EndpointTestService Loaded");
 
@@ -34,29 +34,32 @@ module.exports = function($resource, $q, $rootScope) {
 
 
 
-    this.testEndpoint = function(name, uri, request_headers) {
+    this.testEndpoint = function(name, method, uri, request_headers) {
         console.log("EndpointTestService.testEndpoint");
 
         var URL = 'http://' + convertToSlug(name) + '.api.scaffold.dev' + uri;
-        var EndpointTest = $resource(URL, {}, {
-
-            run: {
-                method: "GET",
-                headers: generateHeaders(request_headers)
-            }
-
-        });
 
         var deferred = $q.defer();
 
-        EndpointTest.run({}, function(response) {
+        $http({
+            method: method,
+            url: URL,
+            headers: generateHeaders(request_headers)
+
+        }).success(function(data, status, headers, config) {
             console.log('Test Successful');
 
-            deferred.resolve(response.data);
+            var results = [];
+            results.data = data;
+            results.headers = headers();
+            results.status = status;
+            results.config = config;
 
-        }, function(error) {
-            console.log(error);
-            deferred.reject(error);
+            deferred.resolve(results);
+
+        }).error(function(data, status) {
+            console.log('Test Failed');
+            deferred.reject(data, status, headers, config);
         });
 
         return deferred.promise;
