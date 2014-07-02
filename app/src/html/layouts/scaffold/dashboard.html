@@ -2,14 +2,11 @@
 
 	<h1>Dashboard</h1>
 
-	<button type="button" class="btn btn-lg btn-danger" data-animation="am-fade-and-slide-top" data-template="modal/docs/modal.tpl.demo.html" bs-modal="modal">Custom Modal
-      <br />
-      <small>(using data-template)</small>
-    </button>
-
 	<hr />
 
 	<h2>Projects</h2>
+	<span style="text-align: center;"><h3><button type="button" ng-click='createProject()'>New Project</button></h3></span>
+	
 	
 	<span style="margin: 350px;">Filter Projects: <input type="text" ng-model="searchProjects" style="margin: 10px;"/></span>
 
@@ -40,6 +37,7 @@
 	<hr />
 
 	<h2>Endpoints</h2>
+	<span style="text-align: center;"><h3><button type="button" ng-click='createEndpoint()'>New Endpoint</button></h3></span>
 
 	<span style="margin: 350px;">Filter Endpoints: <input type="text" ng-model="searchEndpoints" style="margin: 10px;"/></span>
 
@@ -73,6 +71,7 @@
 	<hr />
 
 	<h2>Objects</h2>
+	<span style="text-align: center;"><h3><button type="button" ng-click='createObject()'>New Object</button></h3></span>
 
 	<span style="margin: 350px;">Filter Objects: <input type="text" ng-model="searchObjects" style="margin: 10px;"/></span>
 

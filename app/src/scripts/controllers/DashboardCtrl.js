@@ -57,7 +57,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
                         var myModal = $modal({
                             title: response.config.url,
-                            content: generateContent(response, request_headers),
+                            content: testEndpointContent(response, request_headers),
                             show: true
                         });
                         $scope.showModal = function() {
@@ -72,7 +72,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         };
     };
 
-    var generateContent = function(response, request_headers) {
+    var testEndpointContent = function(response, request_headers) {
 
         var template = "";
 
@@ -106,15 +106,22 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         responseHeaderTable += "</table>"
         template += responseHeaderTable;
 
-
-
-
         template += "</div>";
         return template;
     }
 
-    $scope.editEndpoint = function(endpoint) {
-
+    $scope.createProject = function() {
+        var myModal = $modal({
+            title: "New Project",
+            content: "TEST",
+            show: true
+        });
+        $scope.showModal = function() {
+            myModal.$promise.then(myModal.show);
+        };
+        $scope.hideModal = function() {
+            myModal.$promise.then(myModal.hide);
+        };
     };
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT
