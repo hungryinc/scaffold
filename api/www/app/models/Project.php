@@ -129,11 +129,11 @@ class Project extends Eloquent implements ProjectRepository
 				$endpoint_response_headers = $endpoint['response_headers'];
 
 				foreach ($endpoint_response_headers as $header) {
-					$response_headers[$header['key']] = $header['value'];
+					$headerString = "" . $header['key'] . ": " . $header['value'];
+					header($headerString, true, $code);
 				}
 
-
-				return Response::json($data, $code, $response_headers);
+				return Response::json($data, $code);
 			} else {
 				throw new Exception("That URI does not exist for any of the endpoints in the project");
 			}	

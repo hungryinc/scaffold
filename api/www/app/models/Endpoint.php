@@ -260,8 +260,11 @@ class Endpoint extends Eloquent implements EndpointRepository
 	public function syncData($endpoint, $data, $type)
 	{
 		$id_array = array();
+		$exposeHeaderString = "";
+
 		if (is_array($data)) {
 			foreach ($data as $key => $value) {
+
 				$header = Header::where('key', '=', $key)->where('value', '=', $value)->first();
 
 				if ($header == null) {
@@ -270,6 +273,8 @@ class Endpoint extends Eloquent implements EndpointRepository
 					$header->value = $value;
 					$header->save();
 				}
+
+				$exposeHeaderString = $exposeHeaderString . $header->key . ", ";
 
 				$id_array[] = $header->id;
 			}	
@@ -280,6 +285,19 @@ class Endpoint extends Eloquent implements EndpointRepository
 		if ($type == 'request') {
 			$endpoint->requestHeaders()->sync($id_array);
 		} else if ($type == 'response') {
+
+			$exposeHeader = Header::where('key', '=', 'Access-Control-Expose-Headers')->where('value', '=', $exposeHeaderString)->first();
+
+			if ($exposeHeader == null) {
+				$exposeHeader = new Header();
+				$exposeHeader->key = 'Access-Control-Expose-Headers';
+				$exposeHeader->value = $exposeHeaderString;
+				$exposeHeader->save();
+			}
+
+			$id_array[] = $exposeHeader->id;
+			
+
 			$endpoint->responseHeaders()->sync($id_array);
 		} else if ($type == 'project') {
 			$endpoint->project();
