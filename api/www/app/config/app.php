@@ -119,7 +119,6 @@ return array(
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
-		'Artistan\Urlencode\UrlencodeServiceProvider',
 
 	),
 
@@ -188,5 +187,7 @@ return array(
 		'View'        => 'Illuminate\Support\Facades\View',
 
 	),
+
+	'cipher' => MCRYPT_RIJNDAEL_256,
 
 );

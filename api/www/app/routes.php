@@ -66,4 +66,3 @@ Route::group(array('domain' => '{projectName}.api.scaffold.dev'), function()
 });
 
 
-
