@@ -9,8 +9,8 @@ require("../../vendor/angular-ui-router/release/angular-ui-router");
 require("../../vendor/ngQuickDate/dist/ng-quick-date");
 require("./modules/cookies");
 require("../../vendor/ng-prettyjson/dist/ng-prettyjson.min");
-require("../../vendor/angular-strap/dist/angular-strap.min");
-
+require("../../vendor/angular-strap/dist/angular-strap");
+require("../../vendor/angular-strap/dist/angular-strap.tpl");
 
 console.log("app.js Loaded");
 
@@ -24,6 +24,11 @@ var dateLocalizer = angular.module('dateLocalizeFilter', []).filter('dateLocaliz
 var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'mgcrea.ngStrap']);
 
 scaffold.config(require("./routes/MainRoutes"));
+scaffold.config(function($modalProvider) {
+    angular.extend($modalProvider.defaults, {
+        html: true
+    });
+});
 
 scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$cookies", require("./controllers/ObjectCtrl")]);
 scaffold.controller('EndpointCtrl', ["$scope", "EndpointService", "$rootScope", "$cookies", require("./controllers/EndpointCtrl")]);

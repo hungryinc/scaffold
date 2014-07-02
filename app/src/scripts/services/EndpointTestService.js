@@ -4,24 +4,6 @@ module.exports = function($resource, $q, $rootScope, $http) {
 
     console.log("EndpointTestService Loaded");
 
-    var convertToSlug = function(str) {
-        str = str.replace(/^\s+|\s+$/g, ''); // trim
-        str = str.toLowerCase();
-
-        // remove accents, swap ñ for n, etc
-        var from = "ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;";
-        var to = "aaaaaeeeeeiiiiooooouuuunc------";
-        for (var i = 0, l = from.length; i < l; i++) {
-            str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-        }
-
-        str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
-        .replace(/\s+/g, '-') // collapse whitespace and replace by -
-        .replace(/-+/g, '-'); // collapse dashes
-
-        return str;
-    };
-
     var generateHeaders = function(request_headers) {
         var result = {};
         for (var i = 0; i < request_headers.length; i++) {
@@ -37,7 +19,7 @@ module.exports = function($resource, $q, $rootScope, $http) {
     this.testEndpoint = function(name, method, uri, request_headers) {
         console.log("EndpointTestService.testEndpoint");
 
-        var URL = 'http://' + convertToSlug(name) + '.api.scaffold.dev' + uri;
+        var URL = 'http://' + name + '.api.scaffold.dev' + uri;
 
         var deferred = $q.defer();
 

@@ -2,6 +2,11 @@
 
 	<h1>Dashboard</h1>
 
+	<button type="button" class="btn btn-lg btn-danger" data-animation="am-fade-and-slide-top" data-template="modal/docs/modal.tpl.demo.html" bs-modal="modal">Custom Modal
+      <br />
+      <small>(using data-template)</small>
+    </button>
+
 	<hr />
 
 	<h2>Projects</h2>
@@ -59,7 +64,7 @@
 			</td>
 			<td>
 				<button type="button" ng-click='editEndpoint(endpoint)'>Edit Endpoint</button>
-				<button type="button" ng-click='testEndpoint(endpoint)'>Test Endpoint</button>
+				<button type="button" data-animation="am-fade-and-scale" data-placement="center" ng-click='testEndpoint(endpoint)'>Test Endpoint</button>
 			</td>
 
 		</tr>
