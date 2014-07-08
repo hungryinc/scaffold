@@ -4,7 +4,7 @@ module.exports = function($resource, $q, $rootScope) {
 
     console.log("MainService Loaded");
 
-    var URL = 'http://localhost:8888/objects/:objectId';
+    var URL = 'http://api.scaffold.dev/objects/:objectId';
 
     var formatDate = function(date) {
         var t = date.split(/[- :]/);

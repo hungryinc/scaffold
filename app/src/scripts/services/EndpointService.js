@@ -4,7 +4,7 @@ module.exports = function($resource, $q, $rootScope) {
 
     console.log("EndpointService Loaded");
 
-    var URL = 'http://localhost:8888/endpoints/:endpointId';
+    var URL = 'http://api.scaffold.dev/endpoints/:endpointId';
 
     var formatDate = function(date) {
         var t = date.split(/[- :]/);

@@ -321,7 +321,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 	{
 		$endpoints = $this->getEndpoints();
 		foreach ($endpoints as $endpoint) {
-			if ($endpoint->name == $name) {
+			if ($endpoint['name'] == $name) {
 				return true;
 			}
 		}
@@ -332,7 +332,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 	{
 		$endpoints = $this->getEndpoints();
 		foreach ($endpoints as $endpoint) {
-			if ($endpoint->uri == $uri) {
+			if ($endpoint['uri'] == $uri) {
 				return true;
 			}
 		}

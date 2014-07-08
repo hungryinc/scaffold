@@ -183,9 +183,9 @@ class Object extends Eloquent implements ObjectRepository
 
 	public function checkName($name)
 	{
-		$endpoints = $this->getEndpoints();
-		foreach ($endpoints as $endpoint) {
-			if ($endpoint->name == $name) {
+		$objects = $this->getObjects();
+		foreach ($objects as $object) {
+			if ($object['name'] == $name) {
 				return true;
 			}
 		}

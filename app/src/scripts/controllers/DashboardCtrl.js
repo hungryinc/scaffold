@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService, $modal) {
+module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService, ObjectService, EndpointService, $modal) {
 
     console.log("DashboardCtrl Loaded");
 
@@ -18,6 +18,11 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             $scope.objects = objects;
         });
 
+        $scope.modal = {
+            "title": "Title",
+            "content": "Hello Modal<br />This is a multiline message!"
+        };
+
     };
 
     refreshList();
@@ -29,6 +34,11 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         refreshList();
     });
 
+    $scope.popover = {
+        "title": "Title",
+        "content": "Hello Popover<br />This is a multiline message!"
+    };
+
     $scope.testEndpoint = function(endpoint) {
         console.log('DashboardCtrl.testEndpoint');
         for (var i = 0; i < $scope.projects.length; i++) {
@@ -36,17 +46,27 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             for (var j = 0; j < project.endpoints.length; j++) {
                 var value = project.endpoints[j]
                 if (endpoint.id == value.id) {
-                    console.log(value.id);
                     var name = convertToSlug(project.name);
                     var method = endpoint.method;
                     var uri = endpoint.uri;
                     var request_headers = endpoint.request_headers;
 
                     EndpointTestService.testEndpoint(name, method, uri, request_headers).then(function(response) {
-                        console.log(response);
 
                         $scope.response = response;
                         $scope.request_headers = request_headers;
+
+                        var response_headers = [];
+
+                        for (var i in $scope.response.headers) {
+                            var header = {
+                                key: i,
+                                value: $scope.response.headers[i]
+                            }
+                            response_headers.push(header);
+                        };
+                        $scope.response_headers = response_headers;
+                        console.log(response_headers);
 
 
 
@@ -55,16 +75,19 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                         var response = $scope.response;
                         var request_headers = $scope.request_headers;
 
-                        var myModal = $modal({
+                        console.log(request_headers);
+                        console.log(response.headers);
+
+                        // Pre-fetch an external template populated with a custom scope
+                        var modal = $modal({
                             title: response.config.url,
-                            content: testEndpointContent(response, request_headers),
+                            scope: $scope,
+                            template: '/src/html/strap-templates/testEndpoint.html',
                             show: true
                         });
+                        // Show when some event occurs (use $promise property to ensure the template has been loaded)
                         $scope.showModal = function() {
-                            myModal.$promise.then(myModal.show);
-                        };
-                        $scope.hideModal = function() {
-                            myModal.$promise.then(myModal.hide);
+                            modal.$promise.then(modal.show);
                         };
                     });
                 }
@@ -72,56 +95,38 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         };
     };
 
-    var testEndpointContent = function(response, request_headers) {
-
-        var template = "";
-
-        template += '<div class="dashboard">';
-
-
-        //REQUEST HEADERS
-        template += '<h2>Request Headers</h2>';
-        var requestHeaderTable = '<table border = "1" style="text-align: center; padding: 10px;">';
-        for (var i = 0; i < request_headers.length; i++) {
-            var header = request_headers[i];
-            var string = "<tr><td>" + header['key'] + "</td><td>" + header['value'] + "</td></tr>";
-            requestHeaderTable += string;
-        };
-        requestHeaderTable += "</table>"
-        template += requestHeaderTable;
-
-
-        //JSON DATA
-        template += '<h2>JSON</h2>';
-        template += '<pre>' + JSON.stringify(response.data, null, 2) + '</pre>';
-
-
-        //RESPONSE HEADERS
-        template += '<h2>Response Headers</h2>';
-        var responseHeaderTable = '<table border = "1" style="text-align: center; padding: 10px;">';
-        for (var i in response.headers) {
-            var string = "<tr><td>" + i + "</td><td>" + response.headers[i] + "</td></tr>";
-            responseHeaderTable += string;
-        };
-        responseHeaderTable += "</table>"
-        template += responseHeaderTable;
-
-        template += "</div>";
-        return template;
-    }
-
-    $scope.createProject = function() {
-        var myModal = $modal({
-            title: "New Project",
-            content: "TEST",
+    $scope.createObjectModal = function() {
+        var modal = $modal({
+            title: "New Object",
+            scope: $scope,
+            template: '/src/html/strap-templates/objectForm.html',
             show: true
         });
+        // Show when some event occurs (use $promise property to ensure the template has been loaded)
         $scope.showModal = function() {
-            myModal.$promise.then(myModal.show);
+            modal.$promise.then(modal.show);
         };
-        $scope.hideModal = function() {
-            myModal.$promise.then(myModal.hide);
-        };
+    };
+
+    $scope.createObject = function(project, name, description, json) {
+
+        try {
+            json = JSON.parse(json);
+        } catch (error) {
+
+        }
+
+        var objectJSON = {
+            project_id: project.id,
+            name: name,
+            description: description,
+            json: json
+        }
+
+        ObjectService.create(objectJSON).then(function() {
+            refreshList()
+        });
+
     };
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT

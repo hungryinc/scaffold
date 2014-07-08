@@ -21,7 +21,7 @@ var dateLocalizer = angular.module('dateLocalizeFilter', []).filter('dateLocaliz
     }
 });
 
-var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'mgcrea.ngStrap']);
+var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngSanitize', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'mgcrea.ngStrap']);
 
 scaffold.config(require("./routes/MainRoutes"));
 scaffold.config(function($modalProvider) {
@@ -34,7 +34,7 @@ scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$co
 scaffold.controller('EndpointCtrl', ["$scope", "EndpointService", "$rootScope", "$cookies", require("./controllers/EndpointCtrl")]);
 
 scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);
-scaffold.controller('DashboardCtrl', ["$scope", "DashboardService", "$rootScope", "$cookies", "EndpointTestService", "$modal", require("./controllers/DashboardCtrl")]);
+scaffold.controller('DashboardCtrl', ["$scope", "DashboardService", "$rootScope", "$cookies", "EndpointTestService", "ObjectService", "EndpointService", "$modal", require("./controllers/DashboardCtrl")]);
 
 scaffold.service('DashboardService', ["$resource", "$q", "$rootScope", require("./services/DashboardService")]);
 scaffold.service('ObjectService', ["$resource", "$q", "$rootScope", require("./services/ObjectService")]);

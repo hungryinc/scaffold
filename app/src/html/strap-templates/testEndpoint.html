@@ -1,0 +1,50 @@
+<div class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" ng-show="title">
+        <button type="button" class="close" ng-click="$hide()">&times;</button>
+        <h4 class="modal-title" ng-bind="title"></h4>
+      </div>
+      <div class="modal-body" ng-bind="content"></div>
+      <div class="angularstrap" style="max-height: 500px; overflow-y: scroll; margin-left: 30px; margin-right: 30px;">
+      <h2>Request Headers</h2>
+      <table border = "1" style="text-align: center; padding: 10px;">
+        <tr style="font-weight: bold;">
+          <th>KEY</th>
+          <th>VALUE</th>
+        </tr>
+        <tr ng-repeat="header in request_headers">
+          <td> {{ header.key }} </td>
+          <td> {{ header.value }} </td>
+        </tr>
+      </table>
+
+      <h2>JSON</h2>
+      <pre pretty-json="response.data" style="margin: 0px 20px 20px 10px;"></pre>
+
+      <h2>Response Headers</h2>
+      <table border = "1" style="text-align: center; padding: 10px;">
+        <tr style="font-weight: bold;">
+          <th>KEY</th>
+          <th>VALUE</th>
+        </tr>
+      
+        <tr ng-repeat="header in response_headers">
+          <td> {{ header['key'] }} </td>
+          <td> {{ header['value'] }} </td>
+          
+           
+        </tr>
+      </table>
+
+      </div>
+
+
+
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
