@@ -77,9 +77,9 @@ module.exports = function($resource, $q, $rootScope) {
         }, data, function(response) {
             deferred.resolve(response.data);
         }, function(error) {
-            alert("ERROR: " + error.data.message);
             deferred.reject(error);
         });
+
         return deferred.promise;
     }
 
@@ -91,37 +91,26 @@ module.exports = function($resource, $q, $rootScope) {
         Objects.create(data, function(response) {
             deferred.resolve(response.data);
         }, function(error) {
-            alert("ERROR: " + error.data.message);
             deferred.reject(error);
         });
 
         return deferred.promise;
     };
 
-    var remove = function() {
-        console.log("ObjectService.remove");
-        var object = this;
-        if (confirm("Do you really want to remove object number " + object.id + "?")) {
-            Objects.remove({
-                objectId: object.id
-            }, function(response) {
+    this.remove = function(id) {
+        console.log("ObjectService.remove", id);
 
-                console.log(object.name + " removed");
+        var deferred = $q.defer();
 
-                if (response.data.warning) {
-                    alert(response.data.warning);
-                } else {
-                    console.log("No endpoints were referencing the object")
-                }
-
-                $rootScope.$emit('afterModification');
-
-            });
-
-        } else {
-            console.log("Deletion Cancelled");
-        }
-    };
+        Objects.remove({
+            objectId: id
+        }, function(response) {
+            deferred.resolve(response.data);
+        }, function(error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    }
 
     return this;
 }

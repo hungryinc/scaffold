@@ -113,13 +113,14 @@ class Project extends Eloquent implements ProjectRepository
 				//DEAL WITH ENDPOINT JSON DATA AND ANY OBJECT JSON DATA
 				$data['data'] = json_decode($endpoint['json']);
 
-				foreach ($data['data'] as $key => $value) {
-
-					if ($object = $this->getObject($value)) {
-						$data['data']->$key = json_decode($object->json);
+				if ($data['data'] != null) {
+					foreach ($data['data'] as $key => $value) {
+						if ($object = $this->getObject($value)) {
+							$data['data']->$key = json_decode($object->json);
+						}
 					}
-
 				}
+				
 
 				//GET RESPONSE CODE FROM ENDPOINT
 				$code = $endpoint['response_code'];
@@ -128,9 +129,11 @@ class Project extends Eloquent implements ProjectRepository
 				$response_headers = array();
 				$endpoint_response_headers = $endpoint['response_headers'];
 
-				foreach ($endpoint_response_headers as $header) {
-					$headerString = "" . $header['key'] . ": " . $header['value'];
-					header($headerString, true, $code);
+				if ($endpoint_response_headers != null) {
+					foreach ($endpoint_response_headers as $header) {
+						$headerString = "" . $header['key'] . ": " . $header['value'];
+						header($headerString, true, $code);
+					}
 				}
 
 				return Response::json($data, $code);

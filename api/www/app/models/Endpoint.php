@@ -77,10 +77,38 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
-				$newEndpoint->method = $method;
+				if ($method = $this->isValidHTTPMethod($method)) {
+					$newEndpoint->method = $method;
+				} else {
+					throw new Exception('That is not a valid HTTP method'); die();
+				}
 			} else {
 				throw new Exception('Method field is missing'); die();
 			}
+
+			if (isset($jsonobject['input']) && $input = $jsonobject['input']) {
+
+				if ($this->isValidInputMethod($newEndpoint->method)) {
+					if (json_encode($input)) {
+
+						foreach ($input as $key => $value) {
+							$this->objectCheck($value);
+							
+						}
+
+						$newEndpoint->input = json_encode($input);
+
+					} else {
+						throw new Exception("The field 'input' is not valid"); die();
+					}
+				} else {
+					throw new Exception("The method you chose does not support input");
+				}
+				
+
+			}
+
+			
 
 			if (isset($jsonobject['response_code']) && $response_code = $jsonobject['response_code']) {
 				$newEndpoint->response_code = $response_code;
@@ -162,7 +190,11 @@ class Endpoint extends Eloquent implements EndpointRepository
 			}
 
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
-				$endpoint->method = $method;
+				if ($method = $this->isValidHTTPMethod($method)) {
+					$endpoint->method = $method;
+				} else {
+					throw new Exception('That is not a valid HTTP method'); die();
+				}
 			}
 
 			if (isset($jsonobject['response_code']) && $response_code = $jsonobject['response_code']) {
@@ -339,6 +371,28 @@ class Endpoint extends Eloquent implements EndpointRepository
 		return false;
 	}
 
+	public function isValidHTTPMethod($method)
+	{
+		$methods = ['GET', 'POST', 'PUT', 'DELETE'];
+
+		if (in_array(strtoupper($method), $methods)) {
+			return strtoupper($method);
+		} else {
+			return false;
+		}
+	}
+
+	public function isValidInputMethod($method)
+	{
+		$methods = ['POST', 'PUT'];
+
+		if (in_array(strtoupper($method), $methods)) {
+			return strtoupper($method);
+		} else {
+			return false;
+		}
+	}
+
 
 
 
@@ -346,7 +400,13 @@ class Endpoint extends Eloquent implements EndpointRepository
 	public function formatted()
 	{
 
-		$this->json = json_decode($this->json);
+		if ($this->json != null) {
+			$this->json = json_decode($this->json);
+		}
+
+		if ($this->input != null) {
+			$this->input = json_decode($this->input);
+		}
 
 		return $this->toArray();
 	}

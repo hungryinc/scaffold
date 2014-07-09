@@ -87,26 +87,25 @@ module.exports = function($resource, $q, $rootScope) {
         Endpoints.create(data, function(response) {
             deferred.resolve(response.data);
         }, function(error) {
-            alert("ERROR: " + error.data.message);
             deferred.reject(error);
         });
         return deferred.promise;
     };
 
-    var remove = function() {
-        console.log("EndpointService.remove");
-        var endpoint = this;
-        if (confirm("Do you really want to remove this endpoint?")) {
-            Endpoints.remove({
-                id: endpoint.id,
-            }, function() {
-                console.log(endpoint.name + " removed");
-                $rootScope.$emit('afterModification');
-            });
-        } else {
-            console.log("Deletion Cancelled");
-        }
-    };
+    this.remove = function(id) {
+        console.log("EndpointService.remove", id);
+
+        var deferred = $q.defer();
+
+        Endpoints.remove({
+            endpointId: id
+        }, function(response) {
+            deferred.resolve(response.data);
+        }, function(error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    }
 
     return this;
 }

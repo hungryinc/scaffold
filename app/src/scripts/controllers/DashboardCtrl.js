@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService, ObjectService, EndpointService, $modal) {
+module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService, ObjectService, EndpointService, $modal, $alert) {
 
     console.log("DashboardCtrl Loaded");
 
@@ -39,6 +39,135 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         "content": "Hello Popover<br />This is a multiline message!"
     };
 
+    $scope.createEndpointModal = function() {
+        $scope.request_headers = [];
+        $scope.addRequestHeader = function(key, value) {
+            if (key != null && value != null) {
+                var header = {
+                    key: key,
+                    value: value
+                };
+
+
+                $scope.request_headers.push({
+                    key: key,
+                    value: value
+                });
+                key = "";
+                value = "";
+            } else {
+                console.log("Please insert BOTH key and value");
+            }
+        };
+        $scope.removeRequestHeader = function(header) {
+            var index = $scope.request_headers.indexOf(header);
+            if (index > -1) {
+                $scope.request_headers.splice(index, 1);
+            }
+        };
+
+        $scope.response_headers = [];
+        $scope.addResponseHeader = function(key, value) {
+            if (key != null && value != null) {
+                var header = {
+                    key: key,
+                    value: value
+                };
+
+
+                $scope.response_headers.push({
+                    key: key,
+                    value: value
+                });
+                key = "";
+                value = "";
+            } else {
+                console.log("Please insert BOTH key and value");
+            }
+        };
+        $scope.removeResponseHeader = function(header) {
+            var index = $scope.response_headers.indexOf(header);
+            if (index > -1) {
+                $scope.response_headers.splice(index, 1);
+            }
+        };
+
+        $scope.HTTPMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+
+        var modal = $modal({
+            title: "New Endpoint",
+            scope: $scope,
+            template: '/src/html/strap-templates/endpointForm.html',
+            show: true
+        });
+        // Show when some event occurs (use $promise property to ensure the template has been loaded)
+        $scope.showModal = function() {
+            modal.$promise.then(modal.show);
+        };
+        $scope.hideModal = function() {
+            modal.$promise.then(modal.hide);
+        };
+    };
+
+    $scope.createEndpoint = function(project, name, uri, method, response_code, request_headers, response_headers, json) {
+
+        try {
+            json = JSON.parse(json);
+        } catch (error) {
+
+        }
+
+        var endpointJSON = {
+            name: name,
+            uri: uri,
+            method: method,
+            response_code: response_code,
+            request_headers: createJSON(request_headers),
+            response_headers: createJSON(response_headers),
+            json: json
+        };
+
+        try {
+            endpointJSON.project_id = project.id;
+        } catch (error) {
+
+        }
+
+        EndpointService.create(endpointJSON).then(function(response) {
+            $scope.hideModal();
+            refreshList()
+        }, function(error) {
+            generateAlert("ERROR:", error.data.message);
+        });
+
+    };
+
+    $scope.removeEndpointModal = function(endpoint) {
+        $scope.endpointToRemove = endpoint;
+        var modal = $modal({
+            title: "Delete Endpoint",
+            scope: $scope,
+            template: '/src/html/strap-templates/removeEndpoint.html',
+            show: true
+        });
+        $scope.showModal = function() {
+            modal.$promise.then(modal.show);
+        };
+        $scope.hideModal = function() {
+            modal.$promise.then(modal.hide);
+        };
+    }
+
+    $scope.removeEndpoint = function(endpointToRemove) {
+        EndpointService.remove(endpointToRemove.id).then(function(endpoint) {
+            $scope.hideModal();
+            console.log(endpoint);
+            refreshList()
+        }, function(error) {
+            generateAlert("ERROR:", error.data.message);
+        });
+    }
+
     $scope.testEndpoint = function(endpoint) {
         console.log('DashboardCtrl.testEndpoint');
         for (var i = 0; i < $scope.projects.length; i++) {
@@ -66,17 +195,11 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                             response_headers.push(header);
                         };
                         $scope.response_headers = response_headers;
-                        console.log(response_headers);
-
-
 
                     }).then(function() {
 
                         var response = $scope.response;
                         var request_headers = $scope.request_headers;
-
-                        console.log(request_headers);
-                        console.log(response.headers);
 
                         // Pre-fetch an external template populated with a custom scope
                         var modal = $modal({
@@ -106,6 +229,9 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         $scope.showModal = function() {
             modal.$promise.then(modal.show);
         };
+        $scope.hideModal = function() {
+            modal.$promise.then(modal.hide);
+        };
     };
 
     $scope.createObject = function(project, name, description, json) {
@@ -117,17 +243,79 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         }
 
         var objectJSON = {
-            project_id: project.id,
             name: name,
             description: description,
             json: json
+        };
+
+        try {
+            objectJSON.project_id = project.id;
+        } catch (error) {
+
         }
 
-        ObjectService.create(objectJSON).then(function() {
+        ObjectService.create(objectJSON).then(function(response) {
+            $scope.hideModal();
             refreshList()
+        }, function(error) {
+            generateAlert("ERROR:", error.data.message);
         });
 
     };
+
+    var generateAlert = function(title, content) {
+        var myAlert = $alert({
+            title: title,
+            content: content,
+            placement: 'top-right',
+            type: 'warning',
+            keyboard: true,
+            duration: 2,
+            container: "form.form-inline",
+            show: true
+        });
+    }
+
+    $scope.removeObjectModal = function(object) {
+        $scope.objectToRemove = object;
+        var modal = $modal({
+            title: "Delete Object",
+            scope: $scope,
+            template: '/src/html/strap-templates/removeObject.html',
+            show: true
+        });
+        $scope.showModal = function() {
+            modal.$promise.then(modal.show);
+        };
+        $scope.hideModal = function() {
+            modal.$promise.then(modal.hide);
+        };
+    }
+
+    $scope.removeObject = function(objectToRemove) {
+        ObjectService.remove(objectToRemove.id).then(function(object) {
+            $scope.hideModal();
+
+            if (object.warning != null) {
+                var myModal = $modal({
+                    title: 'WARNING',
+                    content: object.warning,
+                    show: true
+                });
+                $scope.showModal = function() {
+                    myModal.$promise.then(myModal.show);
+                };
+                $scope.hideModal = function() {
+                    myModal.$promise.then(myModal.hide);
+                };
+            }
+
+            console.log(object);
+            refreshList()
+        }, function(error) {
+            generateAlert("ERROR:", error.data.message);
+        });
+    }
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT
     $scope.hideHashkey = function(object) {
@@ -156,4 +344,14 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
         return str;
     };
+
+    var createJSON = function(array) {
+        var json = {};
+
+        for (var i = 0; i < array.length; i++) {
+            json[array[i].key] = array[i].value;
+        };
+
+        return json;
+    }
 }
