@@ -50,9 +50,9 @@ class Project extends Eloquent implements ProjectRepository
 
 			return $endpoints->toArray();	
 		} else {	
-			throw new Exception("The project name does not exist");	
+			throw new Exception("The project name does not exist");	die();
 		}
-	
+
 	}
 
 	public function getAllObjects($name) {	
@@ -66,18 +66,24 @@ class Project extends Eloquent implements ProjectRepository
 
 			return $objects->toArray();	
 		} else {	
-			throw new Exception("The project name does not exist");	
+			throw new Exception("The project name does not exist");	die();
 		}
-	
+
 	}
 
 
-	public function displayEndpoint($name, $uri)
+	public function displayEndpoint($name, $uri, $method, $input)
 	{
 		if ($project = $this->getProjectByName($name)) {
 			if (count($endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->where('uri', '=', $uri)->get())) {
 
 				$endpoint = $endpoints[0];
+
+				//CHECK IF HTTP METHOD IS ALLOWED
+				$endpointMethod = $endpoint['method'];
+				if ($endpointMethod != $method) {
+					throw new Exception("This endpoint's HTTP method is '" . $endpointMethod . "' but you are using '" . $method . "."); die();
+				}
 
 				//DEAL WITH REQUEST HEADERS
 				$request_headers = getallheaders();
@@ -106,12 +112,27 @@ class Project extends Eloquent implements ProjectRepository
 					$response = array();
 					$response['message'] = "You are missing some request headers";
 					$response['request headers'] = $missingHeaders;
-					throw new Exception(json_encode($response));
+					throw new Exception(json_encode($response)); die();
 				}
 
-
 				//DEAL WITH ENDPOINT JSON DATA AND ANY OBJECT JSON DATA
-				$data['data'] = json_decode($endpoint['json']);
+
+				if (in_array(strtoupper($endpointMethod), ['GET', 'DELETE'])) {
+					$data['data'] = json_decode($endpoint['json']);
+
+				} else if (in_array(strtoupper($endpointMethod), ['POST', 'PUT'])) {
+					if ($input != null) {
+						$array = unserialize($endpoint['input']);
+
+						$data['data'] = $this->verifyInputData($input, $array);
+
+						
+					} else {
+						throw new Exception('Invalid JSON'); die();
+					}
+				} else {
+					throw new Exception('The method stored in the database is not a valid method'); die();
+				}
 
 				if ($data['data'] != null) {
 					foreach ($data['data'] as $key => $value) {
@@ -120,6 +141,7 @@ class Project extends Eloquent implements ProjectRepository
 						}
 					}
 				}
+				
 				
 
 				//GET RESPONSE CODE FROM ENDPOINT
@@ -138,11 +160,11 @@ class Project extends Eloquent implements ProjectRepository
 
 				return Response::json($data, $code);
 			} else {
-				throw new Exception("That URI does not exist for any of the endpoints in the project");
+				throw new Exception("That URI does not exist for any of the endpoints in the project"); die();
 			}	
 
 		} else {
-			throw new Exception("The project name does not exist");
+			throw new Exception("The project name does not exist"); die();
 		}
 	}
 
@@ -162,20 +184,20 @@ class Project extends Eloquent implements ProjectRepository
 				} catch (Exception $e) {}
 
 			} else {
-				throw new Exception('Name field is missing');
+				throw new Exception('Name field is missing'); die();
 			}
 
 			if (isset($jsonobject['description']) && $description = $jsonobject['description']) {
 				$newProject->description = $description;
 			} else {
-				throw new Exception('Description field is missing');
+				throw new Exception('Description field is missing'); die();
 			}
 
 			$newProject->save();
 
 			return $newProject->formatted();
 		} else {
-			throw new Exception('Invalid JSON');
+			throw new Exception('Invalid JSON'); die();
 		}
 	}
 
@@ -225,7 +247,7 @@ class Project extends Eloquent implements ProjectRepository
 			$project->delete();
 
 		} else {
-			throw new Exception("Sorry, tht project ID does not exist.");
+			throw new Exception("Sorry, tht project ID does not exist."); die();
 		}
 
 		return $project->formatted();
@@ -242,17 +264,68 @@ class Project extends Eloquent implements ProjectRepository
 	}
 	
 	public function getObject($str) {
-		if (preg_match('/<%(\d+)%>/is', $str, $matches)){
-			if (($object = Object::find($matches[1])) != null) {
 
-				return $object;
+		try {
+			if (preg_match('/<%(\d+)%>/is', $str, $matches)){
+				if (($object = Object::find($matches[1])) != null) {
 
+					return $object;
+
+				} else {
+					return null;
+				}
 			} else {
 				return null;
 			}
-		} else {
-			return null;
+		} catch (Exception $e) {
+			return false;
 		}
+		
+	}
+
+	public function verifyInputData($input, $array)
+	{
+		$result = new Object();
+
+		foreach ($array as $name => $type) {
+			try {
+				$value = $input[$name];
+			} catch (Exception $e) {
+				throw new Exception("The '" . $name . "' field in your input data is missing!!!"); die();
+			}
+
+			$declaredType = $type;
+			$inputType = strtoupper(gettype($value));
+
+			if ($declaredType == 'NUMBER') {
+				if ($inputType == 'DOUBLE' || $inputType == 'INTEGER') {
+					$result[$name] = $value;
+				} else {
+					throw new Exception("Input value '" . $name . "' has to be a number!!!"); die();
+				}
+			} else if ($declaredType == 'BOOLEAN') {
+				if ($inputType == 'BOOLEAN') {
+					$result[$name] = $value;
+				} else {
+					throw new Exception("Input value '" . $name . "' has to be a boolean!!!"); die();
+				}
+			} else if ($declaredType == 'STRING') {
+				if ($inputType == 'STRING') {
+					$result[$name] = $value;
+				} else {
+					throw new Exception("Input value '" . $name . "' has to be a string!!!"); die();
+				}
+			} else if (json_encode($declaredType)) {
+				if (json_encode($value)) {
+					$result[$name] = $this->verifyInputData($value, $declaredType);
+				} else {
+					throw new Exception("Input value '" . $name . "' has to be a JSON string!!!"); die();
+				}
+			}
+		
+		}
+
+		return $result;
 	}
 
 	public function formatted()

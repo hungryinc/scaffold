@@ -58,9 +58,11 @@ class ProjectController extends BaseController
 
 	public function displayEndpoint($projectName, $uri)
 	{
+		$method = Request::method();
+		$input = Input::get();
 
 		try {
-			$result = $this->project->displayEndpoint($projectName, '/'.$uri);
+			$result = $this->project->displayEndpoint($projectName, '/'.$uri, $method, $input);
 		} catch (Exception $e) {
 
 			throw $e; die();

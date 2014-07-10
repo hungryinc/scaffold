@@ -13,6 +13,12 @@
 
 Route::group(array('domain' => 'api.scaffold.dev'), function()
 {
+	Route::get('/test', function() {
+
+		$unserialize = unserialize('a:3:{s:4:"name";s:6:"STRING";s:3:"age";s:6:"NUMBER";s:10:"likes_dogs";s:7:"BOOLEAN";}');
+		print_r($unserialize);
+
+	});
 
 	Route::get('/objects', 'ObjectController@getAllObjects');
 
@@ -60,7 +66,7 @@ Route::group(array('domain' => '{projectName}.api.scaffold.dev'), function()
 
 	Route::get('/objects', 'ProjectController@getAllObjects');
 
-	Route::get('/{uri}', 'ProjectController@displayEndpoint')->where('uri', '.*');
+	Route::any('/{uri}', 'ProjectController@displayEndpoint')->where('uri', '.*');
 	
 	
 });

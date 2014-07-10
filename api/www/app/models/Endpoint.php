@@ -91,12 +91,9 @@ class Endpoint extends Eloquent implements EndpointRepository
 				if ($this->isValidInputMethod($newEndpoint->method)) {
 					if (json_encode($input)) {
 
-						foreach ($input as $key => $value) {
-							$this->objectCheck($value);
-							
-						}
+						$this->inputCheck($input);
 
-						$newEndpoint->input = json_encode($input);
+						$newEndpoint->input = serialize($input);
 
 					} else {
 						throw new Exception("The field 'input' is not valid"); die();
@@ -106,6 +103,10 @@ class Endpoint extends Eloquent implements EndpointRepository
 				}
 				
 
+			} else {
+				if ($this->isValidInputMethod($newEndpoint->method)) {
+					throw new Exception("Input field is required for PUT or POST methods"); die();
+				}
 			}
 
 			
@@ -194,6 +195,29 @@ class Endpoint extends Eloquent implements EndpointRepository
 					$endpoint->method = $method;
 				} else {
 					throw new Exception('That is not a valid HTTP method'); die();
+				}
+			}
+
+			if (isset($jsonobject['input']) && $input = $jsonobject['input']) {
+
+				if ($this->isValidInputMethod($endpoint->method)) {
+					if (json_encode($input)) {
+	
+						$this->inputCheck($value);
+
+						$endpoint->input = serialize($input);
+
+					} else {
+						throw new Exception("The field 'input' is not valid"); die();
+					}
+				} else {
+					throw new Exception("The method you chose does not support input");
+				}
+				
+
+			} else {
+				if ($this->isValidInputMethod($endpoint->method)) {
+					throw new Exception("Input field is required for PUT or POST methods"); die();
 				}
 			}
 
@@ -393,6 +417,23 @@ class Endpoint extends Eloquent implements EndpointRepository
 		}
 	}
 
+	public function inputCheck($input)
+	{
+		$types = ['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'MIXED'];
+
+		foreach ($input as $key => $value) {
+			if (is_string($value)) {
+				if (!(in_array(strtoupper($value), $types))) {
+					throw new Exception("'" . $key . "' does NOT have a valid input type."); die();
+				}
+			} else if (json_encode($value)) {
+				$this->inputCheck($value);
+			} else {
+				throw new Exception("The input type for '" . $key . "' is not a string.");
+			}
+		}
+		
+	}
 
 
 

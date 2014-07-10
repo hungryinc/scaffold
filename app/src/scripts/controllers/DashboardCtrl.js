@@ -92,7 +92,34 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             }
         };
 
+        $scope.input_values = [];
+        $scope.addInputValue = function(name, type) {
+            if (name != null && type != null) {
+                var inputValue = {
+                    key: name,
+                    value: type
+                };
+
+
+                $scope.input_values.push({
+                    key: name,
+                    value: type
+                });
+                name = "";
+                type = "";
+            } else {
+                console.log("Please insert BOTH name and type");
+            }
+        };
+        $scope.removeInputValue = function(inputValue) {
+            var index = $scope.input_values.indexOf(inputValue);
+            if (index > -1) {
+                $scope.input_values.splice(index, 1);
+            }
+        };
+
         $scope.HTTPMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+        $scope.InputTypes = ['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'MIXED'];
 
         var modal = $modal({
             title: "New Endpoint",
@@ -109,7 +136,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         };
     };
 
-    $scope.createEndpoint = function(project, name, uri, method, response_code, request_headers, response_headers, json) {
+    $scope.createEndpoint = function(project, name, uri, method, response_code, request_headers, response_headers, json, input_values) {
 
         try {
             json = JSON.parse(json);
@@ -124,7 +151,8 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             response_code: response_code,
             request_headers: createJSON(request_headers),
             response_headers: createJSON(response_headers),
-            json: json
+            json: json,
+            input: createJSON(input_values)
         };
 
         try {
