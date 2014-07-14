@@ -19,7 +19,9 @@ module.exports = function($resource, $q, $rootScope, $http) {
     this.testEndpoint = function(name, endpoint) {
         console.log("EndpointTestService.testEndpoint");
 
-        var URL = 'http://' + name + '.api.scaffold.dev' + endpoint.uri;
+        var URI = formatURI(endpoint.uri);
+
+        var URL = 'http://' + name + '.api.scaffold.dev' + URI;
 
         var deferred = $q.defer();
 
@@ -124,6 +126,24 @@ module.exports = function($resource, $q, $rootScope, $http) {
             console.log("Deletion Cancelled");
         }
     };
+
+    var formatURI = function(uri) {
+        var regexArray = uri.match(/\/:([a-zA-Z]+){([a-zA-Z]+)}/g)
+
+        if (regexArray != null) {
+            for (var string in regexArray) {
+                if (string.toUpperCase().indexOf('STRING') != -1) {
+                    uri = uri.replace(string, '/string');
+
+                } else if (string.toUpperCase().indexOf('NUMBER') != -1) {
+                    uri = uri.replace(string, '/123');
+
+                }
+            }
+        }
+
+        return uri;
+    }
 
     return this;
 }
