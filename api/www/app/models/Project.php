@@ -75,9 +75,11 @@ class Project extends Eloquent implements ProjectRepository
 	public function displayEndpoint($name, $uri, $method, $input)
 	{
 		if ($project = $this->getProjectByName($name)) {
-			if (count($endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->where('uri', '=', $uri)->get())) {
 
-				$endpoint = $endpoints[0];
+			if ($endpoint = $this->getEndpointFromURI($uri)) {
+
+
+			// if (count($endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->where('uri', '=', $uri)->get())) {
 
 				//CHECK IF HTTP METHOD IS ALLOWED
 				$endpointMethod = $endpoint['method'];
@@ -278,6 +280,51 @@ class Project extends Eloquent implements ProjectRepository
 		
 	}
 
+	public function getEndpointFromURI($uri)
+	{
+
+		$endpoints = Endpoint::with('requestHeaders', 'responseHeaders')->get();
+
+		foreach ($endpoints as $endpoint) {
+			$endpointURI = $endpoint['uri'];
+
+			if ($endpointURI == $uri) {
+				return $endpoint;
+			}
+
+			if (preg_match_all("/\/:([a-zA-Z]+){([a-zA-Z]+)}/is", $endpointURI, $matches)) {
+
+
+				$endpointURI = str_replace("/", "\/", $endpointURI);
+
+				for ($i=0; $i < count($matches[0]); $i++) { 
+					$name = $matches[1][$i];
+					$type = $matches[2][$i];
+
+					if (strtoupper($type) == 'STRING') {
+						$stringToReplace = "/:" . $name . "{" . $type . "}";
+
+						$endpointURI = str_replace($stringToReplace, "/[a-zA-Z]+", $endpointURI);
+
+					} else if (strtoupper($type) == 'NUMBER') {
+						$stringToReplace = "/:" . $name . "{" . $type . "}";
+
+						$endpointURI = str_replace($stringToReplace, "/[0-9]+", $endpointURI);
+					}
+					
+				}
+
+				$endpointURI = "/" . $endpointURI . "/is";
+
+				if (preg_match($endpointURI, $uri)) {
+					return $endpoint;
+				}
+			}
+			
+		}
+		return null;
+	}
+
 	public function verifyInputData($inputData, $array)
 	{
 
@@ -355,9 +402,9 @@ class Project extends Eloquent implements ProjectRepository
 		}
 	}
 
-	
-
-	
+	public function contains($str, $value) {
+	    return (strpos($str, $value) !== FALSE);
+	}
 
 	public function formatted()
 	{

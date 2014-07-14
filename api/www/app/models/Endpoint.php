@@ -65,17 +65,6 @@ class Endpoint extends Eloquent implements EndpointRepository
 				throw new Exception('Name field is missing'); die();
 			}
 
-			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
-				$newEndpoint->uri = $uri;
-
-				if ($this->checkURI($uri)) {
-					throw new Exception('Sorry, that URI is being used by another endpoint!'); die();
-				}
-
-			} else {
-				throw new Exception('URI field is missing'); die();
-			}
-
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
 				if ($method = $this->isValidHTTPMethod($method)) {
 					$newEndpoint->method = $method;
@@ -84,6 +73,15 @@ class Endpoint extends Eloquent implements EndpointRepository
 				}
 			} else {
 				throw new Exception('Method field is missing'); die();
+			}
+
+			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
+				$newEndpoint->uri = $uri;
+
+				$this->checkURI($uri);
+
+			} else {
+				throw new Exception('URI field is missing'); die();
 			}
 
 			if (isset($jsonobject['input']) && $input = $jsonobject['input']) {
@@ -182,14 +180,6 @@ class Endpoint extends Eloquent implements EndpointRepository
 				}
 			}
 
-			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
-				$endpoint->uri = $uri;
-
-				if ($this->checkURI($uri)) {
-					throw new Exception('Sorry, that URI is being used by another endpoint!'); die();
-				}
-			}
-
 			if (isset($jsonobject['method']) && $method = $jsonobject['method']) {
 				if ($method = $this->isValidHTTPMethod($method)) {
 					$endpoint->method = $method;
@@ -197,6 +187,11 @@ class Endpoint extends Eloquent implements EndpointRepository
 					throw new Exception('That is not a valid HTTP method'); die();
 				}
 			}
+
+			if (isset($jsonobject['uri']) && $uri = $jsonobject['uri']) {
+				$endpoint->uri = $uri;
+				$this->checkURI($uri);
+			} 
 
 			if (isset($jsonobject['input']) && $input = $jsonobject['input']) {
 
@@ -386,13 +381,54 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 	public function checkURI($uri)
 	{
-		$endpoints = $this->getEndpoints();
-		foreach ($endpoints as $endpoint) {
-			if ($endpoint['uri'] == $uri) {
-				return true;
+
+		if (preg_match('#[0-9]#',$uri)){ 
+			throw new Exception("URI can't have numbers!!!");
+		}
+
+		if (preg_match_all("/\/:([a-zA-Z]+){([a-zA-Z]+)}/is", $uri, $matches)) {
+
+			foreach ($matches[2] as $type) {
+				if (!(in_array(strtoupper($type), ['STRING', 'NUMBER']))) {
+					throw new Exception("The URI wildcard dataType has to be either {string} or {number}"); die();
+				}
 			}
 		}
-		return false;
+
+		$endpoints = $this->getEndpoints();
+		foreach ($endpoints as $endpoint) {
+			$endpointURI = $endpoint['uri'];
+
+			if ($endpointURI == $uri) {
+				throw new Exception("That URI is being used by another endpoint!"); die();
+			}
+
+			if (preg_match_all("/\/:([a-zA-Z]+){([a-zA-Z]+)}/is", $endpointURI, $matches)) {
+
+
+				$endpointURI = str_replace("/", "\/", $endpointURI);
+
+				for ($i=0; $i < count($matches[0]); $i++) { 
+					$name = $matches[1][$i];
+					$type = $matches[2][$i];
+
+					if (strtoupper($type) == 'STRING') {
+						$stringToReplace = "/:" . $name . "{" . $type . "}";
+
+						$endpointURI = str_replace($stringToReplace, "/[a-zA-Z]+", $endpointURI);
+
+					}
+					
+				}
+
+				$endpointURI = "/" . $endpointURI . "/is";
+
+				if (preg_match($endpointURI, $uri)) {
+					throw new Exception("That URI matches the wildcard of another endpoint's URI"); die();
+				}
+			}
+			
+		}
 	}
 
 	public function isValidHTTPMethod($method)
@@ -409,6 +445,17 @@ class Endpoint extends Eloquent implements EndpointRepository
 	public function isValidInputMethod($method)
 	{
 		$methods = ['POST', 'PUT'];
+
+		if (in_array(strtoupper($method), $methods)) {
+			return strtoupper($method);
+		} else {
+			return false;
+		}
+	}
+
+	public function methodNeedsID($method)
+	{
+		$methods = ['PUT', 'DELETE'];
 
 		if (in_array(strtoupper($method), $methods)) {
 			return strtoupper($method);
@@ -455,6 +502,10 @@ class Endpoint extends Eloquent implements EndpointRepository
 		}
 	}
 
+	public function contains($str, $value) {
+		return (strpos($str, $value) !== FALSE);
+	}
+
 
 
 
@@ -466,7 +517,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 		}
 
 		if ($this->input != null) {
-			$this->input = json_decode($this->input);
+			$this->input = unserialize($this->input);
 		}
 
 		return $this->toArray();

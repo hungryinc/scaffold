@@ -65,8 +65,6 @@ class ProjectController extends BaseController
 			$result = $this->project->displayEndpoint($projectName, '/'.$uri, $method, $input);
 		} catch (Exception $e) {
 
-			throw $e; die();
-
 			$message = $e->getMessage();
 			$error = json_decode($message);
 

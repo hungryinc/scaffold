@@ -16,17 +16,17 @@ module.exports = function($resource, $q, $rootScope, $http) {
 
 
 
-    this.testEndpoint = function(name, method, uri, request_headers) {
+    this.testEndpoint = function(name, endpoint) {
         console.log("EndpointTestService.testEndpoint");
 
-        var URL = 'http://' + name + '.api.scaffold.dev' + uri;
+        var URL = 'http://' + name + '.api.scaffold.dev' + endpoint.uri;
 
         var deferred = $q.defer();
 
         $http({
-            method: method,
+            method: endpoint.method,
             url: URL,
-            headers: generateHeaders(request_headers)
+            headers: generateHeaders(endpoint.request_headers)
 
         }).success(function(data, status, headers, config) {
             console.log('Test Successful');

@@ -208,7 +208,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                     var uri = endpoint.uri;
                     var request_headers = endpoint.request_headers;
 
-                    EndpointTestService.testEndpoint(name, method, uri, request_headers).then(function(response) {
+                    EndpointTestService.testEndpoint(name, endpoint).then(function(response) {
 
                         $scope.response = response;
                         $scope.request_headers = request_headers;
@@ -224,6 +224,8 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                         };
                         $scope.response_headers = response_headers;
 
+                    }, function(error) {
+                        generateAlert("ERROR:", error.data.message);
                     }).then(function() {
 
                         var response = $scope.response;
