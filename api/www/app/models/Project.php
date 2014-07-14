@@ -117,22 +117,17 @@ class Project extends Eloquent implements ProjectRepository
 
 				//DEAL WITH ENDPOINT JSON DATA AND ANY OBJECT JSON DATA
 
-				if (in_array(strtoupper($endpointMethod), ['GET', 'DELETE'])) {
-					$data['data'] = json_decode($endpoint['json']);
-
-				} else if (in_array(strtoupper($endpointMethod), ['POST', 'PUT'])) {
+				if (in_array(strtoupper($endpointMethod), ['POST', 'PUT'])) {
 					if ($input != null) {
 						$array = unserialize($endpoint['input']);
-
-						$data['data'] = $this->verifyInputData($input, $array);
-
-						
+						$this->verifyInputData($input, $array);
 					} else {
 						throw new Exception('Invalid JSON'); die();
 					}
-				} else {
-					throw new Exception('The method stored in the database is not a valid method'); die();
 				}
+
+				$data['data'] = json_decode($endpoint['json']);
+				
 
 				if ($data['data'] != null) {
 					foreach ($data['data'] as $key => $value) {
@@ -283,15 +278,51 @@ class Project extends Eloquent implements ProjectRepository
 		
 	}
 
-	public function verifyInputData($input, $array)
+	public function verifyInputData($inputData, $array)
 	{
-		$result = new Object();
 
-		foreach ($array as $name => $type) {
+		$array = json_decode(json_encode($array));
+
+		foreach ($array as $name => $element) {
+
+			if (is_object($element)) {
+
+				try {
+					$value = $inputData[$name];
+				} catch (Exception $e) {
+					throw new Exception("The '" . $name . "' JSON field in your input data is missing!!!"); die();
+				}
+				$this->verifyInputData($value, $element);
+
+			} else if (is_array($element) && count($element) == 2){
+				$this->verifyInputDataArray($name, $element, $inputData);
+
+			} else {
+				throw new Exception("The value of '" . $name . "' in the database was not a valid array or JSON object."); die();
+			}
+
+		}
+
+
+		return true;
+	}
+
+	public function verifyInputDataArray($name, $element, $inputData)
+	{
+		if (is_array($element) && count($element) == 2) {
+			$type = $element[0];
+			$required = $element[1];
+
 			try {
-				$value = $input[$name];
+				$value = $inputData[$name];
 			} catch (Exception $e) {
-				throw new Exception("The '" . $name . "' field in your input data is missing!!!"); die();
+
+				if ($required) {
+					throw new Exception("The '" . $name . "' field in your input data is missing!!!"); die();
+				} else {
+					return null;
+				}
+
 			}
 
 			$declaredType = $type;
@@ -299,34 +330,34 @@ class Project extends Eloquent implements ProjectRepository
 
 			if ($declaredType == 'NUMBER') {
 				if ($inputType == 'DOUBLE' || $inputType == 'INTEGER') {
-					$result[$name] = $value;
+					return true;
 				} else {
 					throw new Exception("Input value '" . $name . "' has to be a number!!!"); die();
 				}
 			} else if ($declaredType == 'BOOLEAN') {
 				if ($inputType == 'BOOLEAN') {
-					$result[$name] = $value;
+					return true;
 				} else {
 					throw new Exception("Input value '" . $name . "' has to be a boolean!!!"); die();
 				}
 			} else if ($declaredType == 'STRING') {
 				if ($inputType == 'STRING') {
-					$result[$name] = $value;
+					return true;
 				} else {
 					throw new Exception("Input value '" . $name . "' has to be a string!!!"); die();
 				}
-			} else if (json_encode($declaredType)) {
-				if (json_encode($value)) {
-					$result[$name] = $this->verifyInputData($value, $declaredType);
-				} else {
-					throw new Exception("Input value '" . $name . "' has to be a JSON string!!!"); die();
-				}
+			} else if ($declaredType == 'MIXED') {
+				return true;
 			}
-		
-		}
 
-		return $result;
+		} else {
+			throw new Exception('An invalid array was given to verifyInputDataArray()'); die();
+		}
 	}
+
+	
+
+	
 
 	public function formatted()
 	{

@@ -99,7 +99,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 						throw new Exception("The field 'input' is not valid"); die();
 					}
 				} else {
-					throw new Exception("The method you chose does not support input");
+					throw new Exception("The method you chose does not accept input");
 				}
 				
 
@@ -202,7 +202,7 @@ class Endpoint extends Eloquent implements EndpointRepository
 
 				if ($this->isValidInputMethod($endpoint->method)) {
 					if (json_encode($input)) {
-	
+
 						$this->inputCheck($value);
 
 						$endpoint->input = serialize($input);
@@ -418,21 +418,41 @@ class Endpoint extends Eloquent implements EndpointRepository
 	}
 
 	public function inputCheck($input)
+	{		
+		$input = json_decode(json_encode($input));
+		$types = ['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'MIXED'];
+
+		foreach ($input as $key => $element) {		
+
+			if (is_array($element)) {
+				$this->isValidInputArray($key, $element);
+			} else if (is_object($element)) {
+				$this->inputCheck($element);
+			} else {
+				throw new Exception("'" . $key . "' has to be either JSON or an array with format [string TYPE, boolean REQUIRED]");
+			}
+			
+		}
+		
+	}
+
+	public function isValidInputArray($key, $array)
 	{
 		$types = ['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'MIXED'];
 
-		foreach ($input as $key => $value) {
-			if (is_string($value)) {
-				if (!(in_array(strtoupper($value), $types))) {
-					throw new Exception("'" . $key . "' does NOT have a valid input type."); die();
+		if (count($array) == 2) {
+			$type = $array[0];
+			$required = $array[1];
+			if (in_array($type, $types)) {
+				if (is_bool($required)) {
+					return true;
+				} else {
+					throw new Exception("The 'required' field for '" . $key . "' is not a boolean!");
 				}
-			} else if (json_encode($value)) {
-				$this->inputCheck($value);
 			} else {
-				throw new Exception("The input type for '" . $key . "' is not a string.");
+				throw new Exception("The input type for '" . $key . "' is not valid!");
 			}
 		}
-		
 	}
 
 
