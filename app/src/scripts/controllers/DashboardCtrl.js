@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService, ObjectService, EndpointService, $modal, $alert) {
+module.exports = function($scope, DashboardService, $rootScope, $cookies, EndpointTestService, ObjectService, EndpointService, $modal, $timeout) {
 
     console.log("DashboardCtrl Loaded");
 
@@ -18,9 +18,25 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             $scope.objects = objects;
         });
 
-        $scope.modal = {
-            "title": "Title",
-            "content": "Hello Modal<br />This is a multiline message!"
+        $scope.alerts = [];
+
+        $scope.addAlert = function(text) {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: text
+            });
+            console.log($scope.alerts);
+
+            $timeout(function() {
+                $scope.alerts.splice(0, 1);
+                console.log("ALERT REMOVED");
+                console.log($scope.alerts);
+            }, 3000);
+        }
+
+        $scope.closeAlert = function(index) {
+            console.log(index);
+            $scope.alerts.splice(index, 1);
         };
 
     };
@@ -34,12 +50,8 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         refreshList();
     });
 
-    $scope.popover = {
-        "title": "Title",
-        "content": "Hello Popover<br />This is a multiline message!"
-    };
-
     $scope.createEndpointModal = function() {
+
         $scope.request_headers = [];
         $scope.addRequestHeader = function(key, value) {
             console.log(key, value);
@@ -57,7 +69,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                 key = "";
                 value = "";
             } else {
-                generateAlert("ERROR:", "Please insert BOTH key and value");
+                $scope.addAlert("Please insert BOTH key and value");
             }
         };
         $scope.removeRequestHeader = function(header) {
@@ -83,7 +95,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                 key = "";
                 value = "";
             } else {
-                generateAlert("ERROR:", "Please insert BOTH key and value");
+                $scope.addAlert("Please insert BOTH key and value");
             }
         };
         $scope.removeResponseHeader = function(header) {
@@ -96,14 +108,17 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         $scope.input_values = [];
         $scope.addInputValue = function(name, type, required) {
 
+
             if (required == "YES") {
                 required = true;
-            } else {
+            } else if (required == "NO") {
                 required = false;
+            } else {
+                required = null;
             }
 
-            console.log([name, type, required]);
-            if (name != null && type != null) {
+
+            if (name != null && type != "SELECT" && required != null) {
                 var inputValue = {
                     key: name,
                     value: [type, required]
@@ -111,11 +126,10 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
 
                 $scope.input_values.push(inputValue);
-                console.log($scope.input_values);
                 name = "";
                 type = "";
             } else {
-                generateAlert("ERROR:", "Please insert name and type");
+                $scope.addAlert("Please insert name and type");
             }
         };
         $scope.removeInputValue = function(inputValue) {
@@ -128,22 +142,41 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         $scope.HTTPMethods = ['GET', 'POST', 'PUT', 'DELETE'];
         $scope.InputTypes = ['STRING', 'NUMBER', 'BOOLEAN', 'JSON', 'MIXED'];
 
-        var modal = $modal({
-            title: "New Endpoint",
+        $scope.selectedProject = $scope.projects[0];
+        $scope.setProject = function(project) {
+            $scope.selectedProject = project;
+        };
+
+        $scope.selectedMethod = "SELECT";
+        $scope.setMethod = function(method) {
+            $scope.selectedMethod = method;
+        };
+
+        $scope.selectedInputType = "SELECT";
+        $scope.setInputType = function(value) {
+            $scope.selectedInputType = value;
+        };
+
+        $scope.selectedInputRequired = "SELECT";
+        $scope.setInputRequired = function(value) {
+            $scope.selectedInputRequired = value;
+        };
+
+        console.log($scope.selectedProject);
+
+        var modal = $modal.open({
             scope: $scope,
-            template: '/src/html/strap-templates/endpointForm.html',
-            show: true
+            templateUrl: '/src/html/strap-templates/endpointForm.html',
         });
-        // Show when some event occurs (use $promise property to ensure the template has been loaded)
-        $scope.showModal = function() {
-            modal.$promise.then(modal.show);
-        };
-        $scope.hideModal = function() {
-            modal.$promise.then(modal.hide);
-        };
+
+        modal.result.then(function() {
+
+        }, function() {
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 
-    $scope.createEndpoint = function(project, name, uri, method, response_code, request_headers, response_headers, json, input_values) {
+    $scope.createEndpoint = function(project, name, uri, method, response_code, request_headers, response_headers, json, input_values, $close) {
 
         try {
             json = JSON.parse(json);
@@ -169,37 +202,36 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         }
 
         EndpointService.create(endpointJSON).then(function(response) {
-            $scope.hideModal();
+            $close('success');
             refreshList()
         }, function(error) {
-            generateAlert("ERROR:", error.data.message);
+            $scope.addAlert(error.data.message);
         });
 
     };
 
     $scope.removeEndpointModal = function(endpoint) {
         $scope.endpointToRemove = endpoint;
-        var modal = $modal({
-            title: "Delete Endpoint",
+
+        var modal = $modal.open({
             scope: $scope,
-            template: '/src/html/strap-templates/removeEndpoint.html',
-            show: true
+            templateUrl: '/src/html/strap-templates/removeEndpoint.html',
         });
-        $scope.showModal = function() {
-            modal.$promise.then(modal.show);
-        };
-        $scope.hideModal = function() {
-            modal.$promise.then(modal.hide);
-        };
+
+        modal.result.then(function() {
+
+        }, function() {
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 
-    $scope.removeEndpoint = function(endpointToRemove) {
+    $scope.removeEndpoint = function(endpointToRemove, $close) {
         EndpointService.remove(endpointToRemove.id).then(function(endpoint) {
-            $scope.hideModal();
+            $close('success');
             console.log(endpoint);
             refreshList()
         }, function(error) {
-            generateAlert("ERROR:", error.data.message);
+            $scope.addAlert(error.data.message);
         });
     };
 
@@ -218,30 +250,32 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                         $scope.endpoint = endpoint;
                         $scope.request_headers = request_headers;
 
-                        var modal = $modal({
-                            title: "Test Endpoint",
+                        var modal = $modal.open({
                             scope: $scope,
-                            template: '/src/html/strap-templates/testEndpointInput.html',
-                            show: true
+                            templateUrl: '/src/html/strap-templates/testEndpointInput.html'
                         });
-                        // Show when some event occurs (use $promise property to ensure the template has been loaded)
-                        $scope.showModal = function() {
-                            modal.$promise.then(modal.show);
-                        };
-                        $scope.hideModal = function() {
-                            modal.$promise.then(modal.hide);
-                        };
+
+                        modal.result.then(function() {
+
+                        }, function() {
+                            console.log('Modal dismissed at: ' + new Date());
+                        });
                     } else {
                         var input = null;
-                        $scope.testEndpoint(name, endpoint, input, request_headers);
+                        $scope.testEndpoint(name, endpoint, input, request_headers, null);
                     }
                 }
             }
         }
     };
 
-    $scope.testEndpoint = function(name, endpoint, input, request_headers) {
+    $scope.testEndpoint = function(name, endpoint, input, request_headers, $close) {
         EndpointTestService.testEndpoint(name, endpoint, input).then(function(response) {
+
+
+            if ($close != null) {
+                $close();
+            }
 
             $scope.response = response;
             $scope.request_headers = request_headers;
@@ -264,7 +298,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             testEndpointModal(response);
 
         }, function(error) {
-            generateAlert("ERROR:", error.data.message);
+            $scope.addAlert(error.data.message);
             return error;
         });
     };
@@ -273,40 +307,40 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         var response = $scope.response;
         var request_headers = $scope.request_headers;
 
-        // Pre-fetch an external template populated with a custom scope
-        var modal = $modal({
-            title: response.config.url,
+        var modal = $modal.open({
             scope: $scope,
-            template: '/src/html/strap-templates/testEndpoint.html',
-            show: true
+            templateUrl: '/src/html/strap-templates/testEndpoint.html'
         });
-        // Show when some event occurs (use $promise property to ensure the template has been loaded)
-        $scope.showModal = function() {
-            modal.$promise.then(modal.show);
-        };
-        $scope.hideModal = function() {
-            modal.$promise.then(modal.hide);
-        };
+
+        modal.result.then(function() {
+
+        }, function() {
+            console.log('Modal dismissed at: ' + new Date());
+        });
     }
 
 
     $scope.createObjectModal = function() {
-        var modal = $modal({
-            title: "New Object",
+
+        $scope.selectedProject = $scope.projects[0];
+        $scope.setProject = function(project) {
+            $scope.selectedProject = project;
+        };
+
+
+        var modal = $modal.open({
             scope: $scope,
-            template: '/src/html/strap-templates/objectForm.html',
-            show: true
+            templateUrl: '/src/html/strap-templates/objectForm.html',
         });
-        // Show when some event occurs (use $promise property to ensure the template has been loaded)
-        $scope.showModal = function() {
-            modal.$promise.then(modal.show);
-        };
-        $scope.hideModal = function() {
-            modal.$promise.then(modal.hide);
-        };
+
+        modal.result.then(function() {
+
+        }, function() {
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 
-    $scope.createObject = function(project, name, description, json) {
+    $scope.createObject = function(project, name, description, json, $close) {
 
         try {
             json = JSON.parse(json);
@@ -327,64 +361,53 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         }
 
         ObjectService.create(objectJSON).then(function(response) {
-            $scope.hideModal();
+            $close('success');
             refreshList()
         }, function(error) {
-            generateAlert("ERROR:", error.data.message);
+            $scope.addAlert(error.data.message);
         });
 
-    };
-
-    var generateAlert = function(title, content) {
-        var myAlert = $alert({
-            title: title,
-            content: content,
-            placement: 'top-right',
-            type: 'warning',
-            keyboard: true,
-            duration: 3,
-            show: true
-        });
     };
 
     $scope.removeObjectModal = function(object) {
         $scope.objectToRemove = object;
-        var modal = $modal({
-            title: "Delete Object",
+
+        var modal = $modal.open({
             scope: $scope,
-            template: '/src/html/strap-templates/removeObject.html',
-            show: true
+            templateUrl: '/src/html/strap-templates/removeObject.html',
         });
-        $scope.showModal = function() {
-            modal.$promise.then(modal.show);
-        };
-        $scope.hideModal = function() {
-            modal.$promise.then(modal.hide);
-        };
+
+        modal.result.then(function() {
+
+        }, function() {
+            console.log('Modal dismissed at: ' + new Date());
+        });
     };
 
-    $scope.removeObject = function(objectToRemove) {
+    $scope.removeObject = function(objectToRemove, $close) {
         ObjectService.remove(objectToRemove.id).then(function(object) {
-            $scope.hideModal();
+            $close('success');
 
             if (object.warning != null) {
-                var myModal = $modal({
-                    title: 'WARNING',
-                    content: object.warning,
-                    show: true
+
+                $scope.objectWarning = object.warning;
+
+                var modal = $modal.open({
+                    scope: $scope,
+                    templateUrl: '/src/html/strap-templates/removeObjectWarning.html',
                 });
-                $scope.showModal = function() {
-                    myModal.$promise.then(myModal.show);
-                };
-                $scope.hideModal = function() {
-                    myModal.$promise.then(myModal.hide);
-                };
+
+                modal.result.then(function() {
+
+                }, function() {
+                    console.log('Modal dismissed at: ' + new Date());
+                });
             }
 
             console.log(object);
             refreshList()
         }, function(error) {
-            generateAlert("ERROR:", error.data.message);
+            $scope.addAlert(error.data.message);
         });
     };
 

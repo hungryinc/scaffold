@@ -9,8 +9,8 @@ require("../../vendor/angular-ui-router/release/angular-ui-router");
 require("../../vendor/ngQuickDate/dist/ng-quick-date");
 require("./modules/cookies");
 require("../../vendor/ng-prettyjson/dist/ng-prettyjson.min");
-require("../../vendor/angular-strap/dist/angular-strap");
-require("../../vendor/angular-strap/dist/angular-strap.tpl");
+require("../../vendor/angular-bootstrap/ui-bootstrap");
+require("../../vendor/angular-bootstrap/ui-bootstrap-tpls");
 
 console.log("app.js Loaded");
 
@@ -21,22 +21,16 @@ var dateLocalizer = angular.module('dateLocalizeFilter', []).filter('dateLocaliz
     }
 });
 
-var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngSanitize', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'mgcrea.ngStrap']);
+var scaffold = angular.module('Scaffold', ['ngRoute', 'ui.router', 'ngAnimate', 'ngSanitize', 'ngResource', 'ngQuickDate', 'dateLocalizeFilter', 'cookies', 'ngPrettyJson', 'ui.bootstrap']);
 
 scaffold.config(require("./routes/MainRoutes"));
-scaffold.config(function($modalProvider) {
-    angular.extend($modalProvider.defaults, {
-        html: true
-    });
-});
+
 
 scaffold.controller('ObjectCtrl', ["$scope", "ObjectService", "$rootScope", "$cookies", require("./controllers/ObjectCtrl")]);
 scaffold.controller('EndpointCtrl', ["$scope", "EndpointService", "$rootScope", "$cookies", require("./controllers/EndpointCtrl")]);
 
-scaffold.controller('ListCtrl', ["$scope", require("./controllers/ListCtrl")]);
-scaffold.controller('DashboardCtrl', ["$scope", "DashboardService", "$rootScope", "$cookies", "EndpointTestService", "ObjectService", "EndpointService", "$modal", "$alert",
-    require("./controllers/DashboardCtrl")
-]);
+scaffold.controller('DashboardCtrl', ["$scope", "DashboardService", "$rootScope", "$cookies", "EndpointTestService", "ObjectService", "EndpointService", "$modal", "$timeout", require("./controllers/DashboardCtrl")]);
+
 
 scaffold.service('DashboardService', ["$resource", "$q", "$rootScope", require("./services/DashboardService")]);
 scaffold.service('ObjectService', ["$resource", "$q", "$rootScope", require("./services/ObjectService")]);
