@@ -166,7 +166,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
         var modal = $modal.open({
             scope: $scope,
-            templateUrl: '/src/html/strap-templates/endpointForm.html',
+            templateUrl: '/src/html/ui-bootstrap-templates/endpointForm.html',
         });
 
         modal.result.then(function() {
@@ -215,7 +215,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
         var modal = $modal.open({
             scope: $scope,
-            templateUrl: '/src/html/strap-templates/removeEndpoint.html',
+            templateUrl: '/src/html/ui-bootstrap-templates/removeEndpoint.html',
         });
 
         modal.result.then(function() {
@@ -252,7 +252,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
                         var modal = $modal.open({
                             scope: $scope,
-                            templateUrl: '/src/html/strap-templates/testEndpointInput.html'
+                            templateUrl: '/src/html/ui-bootstrap-templates/testEndpointInput.html'
                         });
 
                         modal.result.then(function() {
@@ -309,7 +309,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
         var modal = $modal.open({
             scope: $scope,
-            templateUrl: '/src/html/strap-templates/testEndpoint.html'
+            templateUrl: '/src/html/ui-bootstrap-templates/testEndpoint.html'
         });
 
         modal.result.then(function() {
@@ -330,7 +330,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
         var modal = $modal.open({
             scope: $scope,
-            templateUrl: '/src/html/strap-templates/objectForm.html',
+            templateUrl: '/src/html/ui-bootstrap-templates/objectForm.html',
         });
 
         modal.result.then(function() {
@@ -374,7 +374,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
         var modal = $modal.open({
             scope: $scope,
-            templateUrl: '/src/html/strap-templates/removeObject.html',
+            templateUrl: '/src/html/ui-bootstrap-templates/removeObject.html',
         });
 
         modal.result.then(function() {
@@ -394,7 +394,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
                 var modal = $modal.open({
                     scope: $scope,
-                    templateUrl: '/src/html/strap-templates/removeObjectWarning.html',
+                    templateUrl: '/src/html/ui-bootstrap-templates/removeObjectWarning.html',
                 });
 
                 modal.result.then(function() {
