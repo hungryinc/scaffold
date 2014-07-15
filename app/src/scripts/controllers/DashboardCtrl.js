@@ -42,7 +42,8 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
     $scope.createEndpointModal = function() {
         $scope.request_headers = [];
         $scope.addRequestHeader = function(key, value) {
-            if (key != null && value != null) {
+            console.log(key, value);
+            if (key != null && key != "" && value != null && value != "") {
                 var header = {
                     key: key,
                     value: value
@@ -56,7 +57,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                 key = "";
                 value = "";
             } else {
-                console.log("Please insert BOTH key and value");
+                generateAlert("ERROR:", "Please insert BOTH key and value");
             }
         };
         $scope.removeRequestHeader = function(header) {
@@ -68,7 +69,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
 
         $scope.response_headers = [];
         $scope.addResponseHeader = function(key, value) {
-            if (key != null && value != null) {
+            if (key != null && key != "" && value != null && value != "") {
                 var header = {
                     key: key,
                     value: value
@@ -82,7 +83,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                 key = "";
                 value = "";
             } else {
-                console.log("Please insert BOTH key and value");
+                generateAlert("ERROR:", "Please insert BOTH key and value");
             }
         };
         $scope.removeResponseHeader = function(header) {
@@ -114,7 +115,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                 name = "";
                 type = "";
             } else {
-                console.log("Please insert name, type, and value");
+                generateAlert("ERROR:", "Please insert name and type");
             }
         };
         $scope.removeInputValue = function(inputValue) {
