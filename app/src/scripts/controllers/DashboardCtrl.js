@@ -184,7 +184,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         $scope.hideModal = function() {
             modal.$promise.then(modal.hide);
         };
-    }
+    };
 
     $scope.removeEndpoint = function(endpointToRemove) {
         EndpointService.remove(endpointToRemove.id).then(function(endpoint) {
@@ -194,9 +194,9 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         }, function(error) {
             generateAlert("ERROR:", error.data.message);
         });
-    }
+    };
 
-    $scope.testEndpoint = function(endpoint) {
+    $scope.testEndpointButton = function(endpoint) {
         console.log('DashboardCtrl.testEndpoint');
         for (var i = 0; i < $scope.projects.length; i++) {
             var project = $scope.projects[i];
@@ -204,49 +204,82 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
                 var value = project.endpoints[j]
                 if (endpoint.id == value.id) {
                     var name = convertToSlug(project.name);
-                    var method = endpoint.method;
-                    var uri = endpoint.uri;
                     var request_headers = endpoint.request_headers;
 
-                    EndpointTestService.testEndpoint(name, endpoint).then(function(response) {
-
-                        $scope.response = response;
+                    if (['POST', 'PUT'].indexOf(endpoint.method.toUpperCase()) > -1) {
+                        $scope.name = name
+                        $scope.endpoint = endpoint;
                         $scope.request_headers = request_headers;
 
-                        var response_headers = [];
-
-                        for (var i in $scope.response.headers) {
-                            var header = {
-                                key: i,
-                                value: $scope.response.headers[i]
-                            }
-                            response_headers.push(header);
-                        };
-                        $scope.response_headers = response_headers;
-
-                    }, function(error) {
-                        generateAlert("ERROR:", error.data.message);
-                    }).then(function() {
-
-                        var response = $scope.response;
-                        var request_headers = $scope.request_headers;
-
-                        // Pre-fetch an external template populated with a custom scope
                         var modal = $modal({
-                            title: response.config.url,
+                            title: "Test Endpoint",
                             scope: $scope,
-                            template: '/src/html/strap-templates/testEndpoint.html',
+                            template: '/src/html/strap-templates/testEndpointInput.html',
                             show: true
                         });
                         // Show when some event occurs (use $promise property to ensure the template has been loaded)
                         $scope.showModal = function() {
                             modal.$promise.then(modal.show);
                         };
-                    });
+                        $scope.hideModal = function() {
+                            modal.$promise.then(modal.hide);
+                        };
+                    } else {
+                        var input = null;
+                        $scope.testEndpoint(name, endpoint, input, request_headers);
+                    }
                 }
-            };
-        };
+            }
+        }
     };
+
+    $scope.testEndpoint = function(name, endpoint, input, request_headers) {
+        EndpointTestService.testEndpoint(name, endpoint, input).then(function(response) {
+
+            $scope.response = response;
+            $scope.request_headers = request_headers;
+
+            var response_headers = [];
+
+            for (var i in $scope.response.headers) {
+                var header = {
+                    key: i,
+                    value: $scope.response.headers[i]
+                }
+                response_headers.push(header);
+            };
+            $scope.response_headers = response_headers;
+
+            $scope.hideModal();
+
+            testEndpointModal(response);
+
+        }, function(error) {
+            generateAlert("ERROR:", error.data.message);
+            return error;
+        });
+    };
+
+    var testEndpointModal = function(response) {
+        var response = $scope.response;
+        var request_headers = $scope.request_headers;
+
+        // Pre-fetch an external template populated with a custom scope
+        var modal = $modal({
+            title: response.config.url,
+            scope: $scope,
+            template: '/src/html/strap-templates/testEndpoint.html',
+            show: true
+        });
+        // Show when some event occurs (use $promise property to ensure the template has been loaded)
+        $scope.showModal = function() {
+            modal.$promise.then(modal.show);
+        };
+        $scope.hideModal = function() {
+            modal.$promise.then(modal.hide);
+        };
+    }
+
 
     $scope.createObjectModal = function() {
         var modal = $modal({
@@ -300,11 +333,10 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             placement: 'top-right',
             type: 'warning',
             keyboard: true,
-            duration: 2,
-            container: "form.form-inline",
+            duration: 3,
             show: true
         });
-    }
+    };
 
     $scope.removeObjectModal = function(object) {
         $scope.objectToRemove = object;
@@ -320,7 +352,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         $scope.hideModal = function() {
             modal.$promise.then(modal.hide);
         };
-    }
+    };
 
     $scope.removeObject = function(objectToRemove) {
         ObjectService.remove(objectToRemove.id).then(function(object) {
@@ -345,7 +377,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         }, function(error) {
             generateAlert("ERROR:", error.data.message);
         });
-    }
+    };
 
     //USE THIS TO REMOVE $$HASHKEY WHEN USING NG-REPEAT
     $scope.hideHashkey = function(object) {
@@ -379,9 +411,9 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         var json = {};
 
         for (var i = 0; i < array.length; i++) {
-            json[array[i].key] = array[i].value;
+            json[array[i].key] = [array[i].value, true];
         };
 
         return json;
-    }
+    };
 }

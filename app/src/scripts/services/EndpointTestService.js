@@ -16,19 +16,33 @@ module.exports = function($resource, $q, $rootScope, $http) {
 
 
 
-    this.testEndpoint = function(name, endpoint) {
+    this.testEndpoint = function(name, endpoint, input) {
         console.log("EndpointTestService.testEndpoint");
+        console.log(input);
 
         var URI = formatURI(endpoint.uri);
 
         var URL = 'http://' + name + '.api.scaffold.dev' + URI;
 
+        var request_headers = generateHeaders(endpoint.request_headers);
+
+        var EndpointTest = $resource(URL, {}, {
+
+            run: {
+                method: endpoint.method,
+                headers: request_headers
+            }
+
+        });
+
         var deferred = $q.defer();
+
 
         $http({
             method: endpoint.method,
             url: URL,
-            headers: generateHeaders(endpoint.request_headers)
+            headers: generateHeaders(endpoint.request_headers),
+            data: input
 
         }).success(function(data, status, headers, config) {
             console.log('Test Successful');
@@ -41,9 +55,16 @@ module.exports = function($resource, $q, $rootScope, $http) {
 
             deferred.resolve(results);
 
-        }).error(function(data, status) {
+        }).error(function(data, status, headers, config) {
             console.log('Test Failed');
-            deferred.reject(data, status, headers, config);
+
+            var results = [];
+            results.data = data;
+            results.headers = headers();
+            results.status = status;
+            results.config = config;
+
+            deferred.reject(results);
         });
 
         return deferred.promise;
