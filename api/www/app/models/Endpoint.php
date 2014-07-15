@@ -210,10 +210,6 @@ class Endpoint extends Eloquent implements EndpointRepository
 				}
 				
 
-			} else {
-				if ($this->isValidInputMethod($endpoint->method)) {
-					throw new Exception("Input field is required for PUT or POST methods"); die();
-				}
 			}
 
 			if (isset($jsonobject['response_code']) && $response_code = $jsonobject['response_code']) {

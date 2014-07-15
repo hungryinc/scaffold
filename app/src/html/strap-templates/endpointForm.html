@@ -38,17 +38,21 @@
                 <tr style="font-weight: bold;">
                   <th>NAME</th>
                   <th>TYPE</th>
+                  <th>REQUIRED</th>
                   <th>ACTION</th>
                 </tr>
                 <tr ng-repeat="value in input_values">
                   <td> {{ value.key }} </td>
-                  <td> {{ value.value }} </td>
+                  <td> {{ value.value[0] }} </td>
+                  <td ng-show="value.value[1]">YES</td>
+                  <td ng-show="!value.value[1]">NO</td>
                   <td><button ng-click="removeInputValue(value)">Remove</button>
                 </tr>
               </table>
               <input type="text" class="form-control" ng-model="inputName" placeholder="Name">
               <button type="button" class="btn btn-default" ng-model="inputType" data-html="1" data-placeholder="Type" ng-options="value for value in InputTypes" bs-select></button>
-              <button ng-click="addInputValue(inputName, inputType)">Add</button>
+              <button type="button" class="btn btn-default" ng-model="inputRequired" data-html="1" data-placeholder="Required" ng-options='value for value in ["YES", "NO"]' bs-select></button>
+              <button ng-click="addInputValue(inputName, inputType, inputRequired)">Add</button>
             </div>
 
             <div style="margin-top: 20px;">

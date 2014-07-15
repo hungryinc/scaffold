@@ -93,22 +93,28 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         };
 
         $scope.input_values = [];
-        $scope.addInputValue = function(name, type) {
+        $scope.addInputValue = function(name, type, required) {
+
+            if (required == "YES") {
+                required = true;
+            } else {
+                required = false;
+            }
+
+            console.log([name, type, required]);
             if (name != null && type != null) {
                 var inputValue = {
                     key: name,
-                    value: type
+                    value: [type, required]
                 };
 
 
-                $scope.input_values.push({
-                    key: name,
-                    value: type
-                });
+                $scope.input_values.push(inputValue);
+                console.log($scope.input_values);
                 name = "";
                 type = "";
             } else {
-                console.log("Please insert BOTH name and type");
+                console.log("Please insert name, type, and value");
             }
         };
         $scope.removeInputValue = function(inputValue) {
@@ -250,7 +256,9 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
             };
             $scope.response_headers = response_headers;
 
-            $scope.hideModal();
+            if ($scope.hideModal) {
+                $scope.hideModal();
+            }
 
             testEndpointModal(response);
 
@@ -411,7 +419,7 @@ module.exports = function($scope, DashboardService, $rootScope, $cookies, Endpoi
         var json = {};
 
         for (var i = 0; i < array.length; i++) {
-            json[array[i].key] = [array[i].value, true];
+            json[array[i].key] = array[i].value;
         };
 
         return json;
